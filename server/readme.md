@@ -1,3 +1,6 @@
+# Project Structure
+
+```
 my-express-api/
 ├── src/
 │   ├── controllers/          # Controllers handle the request/response logic
@@ -31,3 +34,5 @@ my-express-api/
 ├── tsconfig.json              # TypeScript configuration
 ├── package.json               # NPM dependencies and scripts
 └── README.md                  # Project documentation
+
+```
