@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import pool from "../db";
 import { nanoid } from "nanoid";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -14,9 +15,15 @@ router.post("/signup", async (req: Request, res: Response) => {
   const newCode = nanoid(8).toUpperCase();
 
   try {
+    // Hashing the code
+    const saltRounds = 10;
+    const hashedCode = await bcrypt.hash(newCode, saltRounds);
+
+    await pool.query("BEGIN");
+
     const queryResults = await pool.query(
-      "INSERT INTO users (email, nickname, code) VALUES ($1, $2, $3) RETURNING *;",
-      [email, nickname, newCode]
+      "INSERT INTO users (email, nickname, hashed_code) VALUES ($1, $2, $3) RETURNING *;",
+      [email, nickname, hashedCode]
     );
 
     // We get the id of the newly created user to later assign the 'taker' role.
