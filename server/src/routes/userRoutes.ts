@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { UserService } from "../services/userService";
 import dbPool from "../db";
+import { UserService } from "../services/userService";
 import { UserController } from "../controllers/userController";
 
 const router = express.Router();
