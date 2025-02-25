@@ -28,8 +28,8 @@ Hot Takes is a social platform where users can share their bold opinions (or "ho
 ### Database
 - **PostgreSQL**: Powerful, open-source relational database system.
 
-### Deployment (Planned)
-- **Firebase**: Hosting and backend services for deployment.
+### Deployment
+- **Railway**: PostgreSQL currently deployed in Railway.
 
 ---
 
