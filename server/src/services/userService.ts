@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, QueryResult } from 'pg';
 
 export class UserService {
   private pool: Pool;
@@ -7,7 +7,7 @@ export class UserService {
     this.pool = pool;
   }
 
-  async getAllUser() {
+  async getAllUser(): Promise<QueryResult> {
     const results = await this.pool.query(`
       SELECT u.id, u.nickname, r.name as role FROM users u
       JOIN user_roles ur ON u.id = ur.user_id
@@ -17,26 +17,26 @@ export class UserService {
     return results;
   }
 
-  async getUserById(userId: string) {
+  async getUserById(userId: string): Promise<QueryResult> {
     const results = await this.pool.query(
       `
       SELECT u.id, u.nickname, r.name as role FROM users u
       JOIN user_roles ur ON u.id = ur.user_id
       JOIN roles r ON r.id = ur.role_id
       WHERE u.id = $1`,
-      [userId]
+      [userId],
     );
 
     return results;
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string): Promise<QueryResult> {
     const results = await this.pool.query(
       `
         DELETE FROM users
         WHERE id = $1
       `,
-      [userId]
+      [userId],
     );
 
     return results;

@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import { AuthService } from "../services/authService";
-import { successApiResponse, errorApiResponse } from "../utils/apiResponse";
+import { Request, Response } from 'express';
+import { AuthService } from '../services/authService';
+import { successApiResponse, errorApiResponse } from '../utils/apiResponse';
 
 export class AuthController {
   private authService: AuthService;
@@ -9,17 +9,17 @@ export class AuthController {
     this.authService = authService;
   }
 
-  async signUp(req: Request, res: Response) {
+  async signUp(req: Request, res: Response): Promise<void> {
     const { nickname, email } = req.body;
 
     if (!email || !nickname) {
-      errorApiResponse(res, 400, "Email and nickname are required.");
+      errorApiResponse(res, 400, 'Email and nickname are required.');
     }
 
     try {
       const results = await this.authService.signUp(nickname, email);
 
-      successApiResponse(res, 201, results, "User created succesfully!");
+      successApiResponse(res, 201, results, 'User created succesfully!');
     } catch (err) {
       errorApiResponse(res, 500, err);
 

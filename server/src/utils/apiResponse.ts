@@ -1,10 +1,10 @@
-import { Response } from "express";
+import { Response } from 'express';
 
 export const successApiResponse = (
   res: Response,
   status: number,
   data: any,
-  message: string = "Request completed successfullyS"
+  message: string = 'Request completed successfullyS',
 ) => {
   res.status(status).json({
     status,
@@ -17,7 +17,7 @@ export const errorApiResponse = (
   res: Response,
   status: number,
   error?: any,
-  message: string = "Internal server error."
+  message: string = 'Internal server error.',
 ) => {
   res.status(status).json({
     status,
