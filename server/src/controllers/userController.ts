@@ -9,7 +9,7 @@ export class UserController {
     this.userService = userService;
   }
 
-  async getAllUser(req: Request, res: Response): Promise<void> {
+  async getAllUser(_: Request, res: Response): Promise<void> {
     try {
       const results = await this.userService.getAllUser();
 
