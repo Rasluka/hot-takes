@@ -10,14 +10,19 @@ export class AuthController {
   }
 
   async signUp(req: Request, res: Response): Promise<void> {
-    const { nickname, email } = req.body;
+    const { nickname, email, roleId } = req.body;
+    const actualRoleId = roleId ? parseInt(roleId) : 1;
 
     if (!email || !nickname) {
       errorApiResponse(res, 400, 'Email and nickname are required.');
     }
 
     try {
-      const results = await this.authService.signUp(nickname, email);
+      const results = await this.authService.signUp(
+        nickname,
+        email,
+        actualRoleId,
+      );
 
       successApiResponse(res, 201, results, 'User created succesfully!');
     } catch (err) {

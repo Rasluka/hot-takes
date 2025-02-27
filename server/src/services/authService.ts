@@ -31,36 +31,22 @@ export class AuthService {
     this.secretKey = secretKey;
   }
 
-  async signUp(nickname: string, email: string): Promise<SignUpResult> {
+  async signUp(
+    nickname: string,
+    email: string,
+    roleId: number,
+  ): Promise<SignUpResult> {
     // Generating and Hashing the new code
     const newCode = nanoid(8).toUpperCase();
     const saltRounds = 10;
     const hashedCode = await bcrypt.hash(newCode, saltRounds);
 
-    try {
-      await this.dbPool.query('BEGIN');
+    const results = await this.dbPool.query(
+      'INSERT INTO users (email, nickname, hashed_code, role_id) VALUES ($1, $2, $3, $4) RETURNING *;',
+      [email, nickname, hashedCode, roleId],
+    );
 
-      const results = await this.dbPool.query(
-        'INSERT INTO users (email, nickname, hashed_code) VALUES ($1, $2, $3) RETURNING *;',
-        [email, nickname, hashedCode],
-      );
-
-      // We get the id of the newly created user to later assign the 'taker' role.
-      const user = results.rows[0];
-      const newUserId = user.id;
-
-      await this.dbPool.query(
-        'INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)',
-        [newUserId, 1],
-      );
-
-      await this.dbPool.query('COMMIT');
-
-      return { user, code: newCode };
-    } catch (err) {
-      this.dbPool.query('ROLLBACK');
-      throw err;
-    }
+    return { user: results.rows[0], code: newCode };
   }
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
