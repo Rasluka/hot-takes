@@ -75,7 +75,7 @@ export class RoleController {
         return errorApiResponse(res, 404, 'Role not found!');
       }
 
-      successApiResponse(
+      return successApiResponse(
         res,
         200,
         results.rows[0],
@@ -96,14 +96,14 @@ export class RoleController {
         return errorApiResponse(res, 404, 'Role not found!');
       }
 
-      successApiResponse(
+      return successApiResponse(
         res,
         200,
         results.rows[0],
         'Role deleted succesfully!',
       );
     } catch (err) {
-      errorApiResponse(res, 500, err);
+      return errorApiResponse(res, 500, err);
     }
   }
 }

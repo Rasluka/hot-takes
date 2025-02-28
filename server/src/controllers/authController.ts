@@ -24,9 +24,9 @@ export class AuthController {
         actualRoleId,
       );
 
-      successApiResponse(res, 201, results, 'User created succesfully!');
+      return successApiResponse(res, 201, results, 'User created succesfully!');
     } catch (err) {
-      errorApiResponse(res, 500, err);
+      return errorApiResponse(res, 500, err);
 
       // if (err instanceof Error && "code" in err) {
       //   if (err.code === "23505") {
