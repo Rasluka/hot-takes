@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { RoleService } from '../services/roleService';
-import { errorApiResponse, successApiResponse } from '../utils/apiResponse';
+import { successApiResponse } from '../utils/apiResponse';
 
 export class RoleController {
   private roleService: RoleService;
@@ -9,101 +9,92 @@ export class RoleController {
     this.roleService = roleService;
   }
 
-  async createRole(req: Request, res: Response): Promise<void> {
-    const { roleName } = req.body;
+  async getAll(
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const results = await this.roleService.getAllRoles();
 
-    if (!roleName) {
-      errorApiResponse(res, 400, 'Role name is required.');
+    if (results.rows.length === 0) {
+      return next(new Error('No roles found!'));
     }
 
-    try {
-      const results = await this.roleService.createRole(roleName);
-
-      successApiResponse(res, 201, results, 'Role created successfully!');
-    } catch (err) {
-      errorApiResponse(res, 500, err, 'Internal server error.');
-    }
+    successApiResponse(res, 200, results.rows, 'Roles retrieved succesfully!');
   }
 
-  async getAll(_: Request, res: Response): Promise<void> {
-    try {
-      const results = await this.roleService.getAllRoles();
+  async getById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const roleId = req.params.id;
 
-      if (results.rows.length === 0) {
-        errorApiResponse(res, 404, 'No roles found!');
-      }
+    const results = await this.roleService.getRoleById(roleId);
 
-      successApiResponse(
-        res,
-        200,
-        results.rows,
-        'Roles retrieved succesfully!',
-      );
-    } catch (err) {
-      errorApiResponse(res, 500, err);
+    if (!results.rowCount) {
+      return next(new Error('Role not found!'));
     }
+
+    return successApiResponse(
+      res,
+      200,
+      results.rows[0],
+      'Role retrieved succesfully!',
+    );
   }
 
-  async updateRole(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { name } = req.body;
+
+    if (!name) {
+      return next(new Error('Role name is required.'));
+    }
+
+    const results = await this.roleService.createRole(name);
+
+    successApiResponse(res, 201, results.rows[0], 'Role created successfully!');
+  }
+
+  async updateById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     const { roleName } = req.body;
     const roleId = req.params.id;
 
     if (!roleId || !roleName) {
-      errorApiResponse(res, 400, 'Role id and name are required.');
+      next(new Error('Role id and name are required.'));
     }
 
-    try {
-      const results = await this.roleService.updateRole(roleId, roleName);
+    const results = await this.roleService.updateRole(roleId, roleName);
 
-      if (!results.rowCount) {
-        return errorApiResponse(res, 404, 'Role not found!');
-      }
-
-      successApiResponse(res, 200, results, 'Role updated succesfully!');
-    } catch (err) {
-      errorApiResponse(res, 500, err);
+    if (!results.rowCount) {
+      throw new Error('Role not found!');
     }
+
+    return successApiResponse(res, 200, results, 'Role updated succesfully!');
   }
 
-  async getRoleById(req: Request, res: Response): Promise<void> {
+  async deleteById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     const roleId = req.params.id;
 
-    try {
-      const results = await this.roleService.getRoleById(roleId);
+    const results = await this.roleService.deleteRole(roleId);
 
-      if (!results.rowCount) {
-        return errorApiResponse(res, 404, 'Role not found!');
-      }
-
-      return successApiResponse(
-        res,
-        200,
-        results.rows[0],
-        'Role retrieved succesfully!',
-      );
-    } catch (err) {
-      errorApiResponse(res, 500, err);
+    if (!results.rowCount) {
+      next(new Error('Role not found!'));
     }
-  }
 
-  async deleteRole(req: Request, res: Response): Promise<void> {
-    const roleId = req.params.id;
-
-    try {
-      const results = await this.roleService.deleteRole(roleId);
-
-      if (!results.rowCount) {
-        return errorApiResponse(res, 404, 'Role not found!');
-      }
-
-      return successApiResponse(
-        res,
-        200,
-        results.rows[0],
-        'Role deleted succesfully!',
-      );
-    } catch (err) {
-      return errorApiResponse(res, 500, err);
-    }
+    return successApiResponse(
+      res,
+      200,
+      results.rows[0],
+      'Role deleted succesfully!',
+    );
   }
 }

@@ -7,26 +7,8 @@ export class RoleService {
     this.pool = pool;
   }
 
-  async createRole(roleName: string): Promise<QueryResult> {
-    const results = await this.pool.query(
-      'INSERT INTO roles (name) VALUES ($1)',
-      [roleName],
-    );
-
-    return results;
-  }
-
   async getAllRoles(): Promise<QueryResult> {
     const results = await this.pool.query('SELECT * FROM roles;');
-
-    return results;
-  }
-
-  async updateRole(roleId: string, roleName: string): Promise<QueryResult> {
-    const results = await this.pool.query(
-      'UPDATE roles SET name = ($2) WHERE id = $1',
-      [roleId, roleName],
-    );
 
     return results;
   }
@@ -35,6 +17,24 @@ export class RoleService {
     const results = await this.pool.query(
       'SELECT * FROM roles WHERE id = $1;',
       [id],
+    );
+
+    return results;
+  }
+
+  async createRole(roleName: string): Promise<QueryResult> {
+    const results = await this.pool.query(
+      'INSERT INTO roles (name) VALUES ($1) RETURNING id, name;',
+      [roleName],
+    );
+
+    return results;
+  }
+
+  async updateRole(roleId: string, roleName: string): Promise<QueryResult> {
+    const results = await this.pool.query(
+      'UPDATE roles SET name = ($2) WHERE id = $1',
+      [roleId, roleName],
     );
 
     return results;
