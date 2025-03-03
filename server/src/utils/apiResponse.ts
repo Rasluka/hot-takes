@@ -1,27 +1,27 @@
 import { Response } from 'express';
 
-export const successApiResponse = (
-  res: Response,
-  status: number,
-  data: any,
-  message: string = 'Request completed successfullyS',
-) => {
-  res.status(status).json({
-    status,
-    data,
-    message,
-  });
-};
+interface ApiResponse<T> {
+  status: number;
+  data: T;
+  message: string;
+}
 
-export const errorApiResponse = (
-  res: Response,
+const createApiResponse = <T>(
   status: number,
-  error?: any,
-  message: string = 'Internal server error.',
-) => {
-  res.status(status).json({
-    status,
-    message,
-    error: error || null,
-  });
+  data: T,
+  message: string,
+): ApiResponse<T> => ({
+  status,
+  data,
+  message,
+});
+
+export const successApiResponse = <T>(
+  res: Response,
+  status: number = 200,
+  data: T,
+  message: string = 'Request completed successfully.',
+): void => {
+  const response = createApiResponse(status, data, message);
+  res.status(status).json(response);
 };

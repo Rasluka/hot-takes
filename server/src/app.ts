@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { errorHandler } from './middleware/errorHandler';
 import authRouter from './routes/authRoutes';
 import usersRouter from './routes/userRoutes';
 import roleRouter from './routes/roleRoutes';
@@ -11,6 +12,8 @@ app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/roles', roleRouter);
+
+app.use(errorHandler);
 
 const PORT = process.env.SERVER_PORT;
 app.listen(PORT, () => {

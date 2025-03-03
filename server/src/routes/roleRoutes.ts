@@ -1,30 +1,46 @@
-import express, { Request, Response } from 'express';
-import { RoleService } from '../services/roleService';
+import express, { Request, Response, NextFunction } from 'express';
 import dbPool from '../db';
+import { RoleService } from '../services/roleService';
 import { RoleController } from '../controllers/roleController';
+import { asyncWrapper } from '../utils/asyncWrapper';
 
 const router = express.Router();
 const roleService = new RoleService(dbPool);
 const roleController = new RoleController(roleService);
 
-router.post('/', async (req: Request, res: Response) =>
-  roleController.createRole(req, res),
+router.get(
+  '/',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    roleController.getAll(req, res, next),
+  ),
 );
 
-router.get('/', async (req: Request, res: Response) =>
-  roleController.getAll(req, res),
+router.get(
+  '/:id',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    roleController.getById(req, res, next),
+  ),
 );
 
-router.put('/:id', async (req: Request, res: Response) =>
-  roleController.updateRole(req, res),
+router.post(
+  '/',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    roleController.create(req, res, next),
+  ),
 );
 
-router.get('/:id', async (req: Request, res: Response) =>
-  roleController.getRoleById(req, res),
+router.put(
+  '/:id',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    roleController.updateById(req, res, next),
+  ),
 );
 
-router.delete('/:id', async (req: Request, res: Response) =>
-  roleController.deleteRole(req, res),
+router.delete(
+  '/:id',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    roleController.deleteById(req, res, next),
+  ),
 );
 
 export default router;
