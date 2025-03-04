@@ -1,4 +1,5 @@
 import { Pool, QueryResult } from 'pg';
+import { IUser } from '../models/interfaces';
 
 export class UserService {
   private pool: Pool;
@@ -7,11 +8,12 @@ export class UserService {
     this.pool = pool;
   }
 
-  async getAllUser(): Promise<QueryResult> {
+  async getAll(): Promise<QueryResult<IUser>> {
     const results = await this.pool.query(`
-      SELECT u.id, u.nickname, r.name as role FROM users u
-      JOIN user_roles ur ON u.id = ur.user_id
-      JOIN roles r ON r.id = ur.role_id;
+      SELECT u.id, u.nickname, u.email,
+      json_build_object('id', r.id, 'name', r.name) AS role
+      FROM users u
+      JOIN roles r ON r.id = u.role_id;
   `);
 
     return results;

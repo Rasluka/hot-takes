@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import { UserService } from '../services/userService';
 import { successApiResponse } from '../utils/apiResponse';
 
@@ -9,11 +9,15 @@ export class UserController {
     this.userService = userService;
   }
 
-  async getAllUser(_req: Request, res: Response): Promise<void> {
-    const results = await this.userService.getAllUser();
+  async getAll(
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const results = await this.userService.getAll();
 
     if (!results.rowCount) {
-      throw new Error('User not found!');
+      return next(new Error('No user found!'));
     }
 
     return successApiResponse(
