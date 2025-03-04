@@ -3,7 +3,7 @@ import logger from '../utils/logger';
 
 export const errorHandler = (
   error: unknown,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction,
 ): void => {
@@ -15,7 +15,10 @@ export const errorHandler = (
     message = error.message;
   }
 
-  logger.error(`Status: ${statusCode}, Message: ${message}`, { error });
+  logger.error(
+    `[${req.url}] => [${req.method}] => Status: ${statusCode}, Message: ${message}`,
+    { error },
+  );
 
   res.status(statusCode).json({ message });
 };

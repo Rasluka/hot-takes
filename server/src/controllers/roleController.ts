@@ -14,7 +14,7 @@ export class RoleController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const results = await this.roleService.getAllRoles();
+    const results = await this.roleService.getAll();
 
     if (results.rows.length === 0) {
       return next(new Error('No roles found!'));
@@ -30,7 +30,7 @@ export class RoleController {
   ): Promise<void> {
     const roleId = req.params.id;
 
-    const results = await this.roleService.getRoleById(roleId);
+    const results = await this.roleService.getById(roleId);
 
     if (!results.rowCount) {
       return next(new Error('Role not found!'));
@@ -51,7 +51,7 @@ export class RoleController {
       return next(new Error('Role name is required.'));
     }
 
-    const results = await this.roleService.createRole(name);
+    const results = await this.roleService.create(name);
 
     successApiResponse(res, 201, results.rows[0], 'Role created successfully!');
   }
@@ -61,20 +61,25 @@ export class RoleController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const { roleName } = req.body;
-    const roleId = req.params.id;
+    const { name } = req.body;
+    const id = req.params.id;
 
-    if (!roleId || !roleName) {
-      next(new Error('Role id and name are required.'));
+    if (!id || !name) {
+      return next(new Error('Role id and name are required.'));
     }
 
-    const results = await this.roleService.updateRole(roleId, roleName);
+    const results = await this.roleService.updateById(id, name);
 
     if (!results.rowCount) {
-      throw new Error('Role not found!');
+      return next(Error('Role not found!'));
     }
 
-    return successApiResponse(res, 200, results, 'Role updated succesfully!');
+    return successApiResponse(
+      res,
+      200,
+      results.rows[0],
+      'Role updated succesfully!',
+    );
   }
 
   async deleteById(
@@ -84,10 +89,10 @@ export class RoleController {
   ): Promise<void> {
     const roleId = req.params.id;
 
-    const results = await this.roleService.deleteRole(roleId);
+    const results = await this.roleService.deleteById(roleId);
 
     if (!results.rowCount) {
-      next(new Error('Role not found!'));
+      return next(new Error('Role not found!'));
     }
 
     return successApiResponse(
