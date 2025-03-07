@@ -28,13 +28,17 @@ export class UserController {
     );
   }
 
-  async getUserById(req: Request, res: Response): Promise<void> {
-    const userId: string = req.params.id;
+  async getById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const userId: string = req.params.userId;
 
-    const results = await this.userService.getUserById(userId);
+    const results = await this.userService.getById(userId);
 
     if (!results.rowCount) {
-      throw new Error('User not found!');
+      return next(new Error('User not found!'));
     }
 
     return successApiResponse(
@@ -45,15 +49,42 @@ export class UserController {
     );
   }
 
-  async deleteUser(req: Request, res: Response): Promise<void> {
-    const userId: string = req.params.id;
+  async updateUserRole(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const userId: string = req.params.userId;
+    const { roleId } = req.body;
 
-    const results = await this.userService.deleteUser(userId);
+    const results = await this.userService.updateUserRole(userId, roleId);
 
     if (!results.rowCount) {
-      throw new Error('User not found!');
+      return next(new Error('User not found!'));
     }
 
-    return successApiResponse(res, 200, userId, 'User deleted successfully!');
+    return successApiResponse(
+      res,
+      200,
+      results.rows[0],
+      'User role updated successfully!',
+    );
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const userId: string = req.params.id;
+
+    const results = await this.userService.delete(userId);
+
+    if (!results.rowCount) {
+      return next(new Error('User not found!'));
+    }
+
+    return successApiResponse(
+      res,
+      200,
+      results.rows[0],
+      'User deleted successfully!',
+    );
   }
 }

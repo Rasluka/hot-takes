@@ -18,13 +18,27 @@ router.get(
 );
 
 //GetById
-router.get('/:id', async (req: Request, res: Response) =>
-  userController.getUserById(req, res),
+router.get(
+  '/:userId',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    userController.getById(req, res, next),
+  ),
+);
+
+// Update user role
+router.patch(
+  '/:userId/role',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    userController.updateUserRole(req, res, next),
+  ),
 );
 
 //DeleteById
-router.delete('/:id', async (req: Request, res: Response) =>
-  userController.deleteUser(req, res),
+router.delete(
+  '/:id',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    userController.delete(req, res, next),
+  ),
 );
 
 export default router;

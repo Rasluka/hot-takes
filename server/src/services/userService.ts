@@ -13,30 +13,51 @@ export class UserService {
       SELECT u.id, u.nickname, u.email,
       json_build_object('id', r.id, 'name', r.name) AS role
       FROM users u
-      JOIN roles r ON r.id = u.role_id;
+      JOIN roles r ON r.id = u.role_id
+      ORDER BY u.id;
   `);
 
     return results;
   }
 
-  async getUserById(userId: string): Promise<QueryResult> {
+  async getById(userId: string): Promise<QueryResult<IUser>> {
     const results = await this.pool.query(
       `
-      SELECT u.id, u.nickname, r.name as role FROM users u
-      JOIN user_roles ur ON u.id = ur.user_id
-      JOIN roles r ON r.id = ur.role_id
-      WHERE u.id = $1`,
+      SELECT u.id, u.nickname, u.email,
+      json_build_object('id', r.id, 'name', r.name) AS role
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.id = $1
+      ORDER BY u.id;`,
       [userId],
     );
 
     return results;
   }
 
-  async deleteUser(userId: string): Promise<QueryResult> {
+  async updateUserRole(
+    userId: string,
+    roleId: string,
+  ): Promise<QueryResult<IUser>> {
+    const results = this.pool.query(
+      `
+          UPDATE users
+          SET role_id = $2
+          WHERE id = $1
+          RETURNING id, nickname, email, role_id;
+      `,
+      [userId, roleId],
+    );
+
+    return results;
+  }
+
+  async delete(userId: string): Promise<QueryResult> {
     const results = await this.pool.query(
       `
         DELETE FROM users
         WHERE id = $1
+        RETURNING id, nickname, email, role_id;
       `,
       [userId],
     );
