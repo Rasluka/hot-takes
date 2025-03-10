@@ -10,5 +10,5 @@ export interface IUser {
   hashed_code: string;
   role_id: number;
   created_at: Date;
-  role?: IRole;
+  role: IRole;
 }

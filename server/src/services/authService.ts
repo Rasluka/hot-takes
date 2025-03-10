@@ -1,24 +1,16 @@
-// import bcrypt from 'bcrypt';
 import { Pool } from 'pg';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-interface User {
-  id: number;
-  email: string;
-  nickname: string;
-  hashed_code: string;
-  // Add other fields if necessary
-}
+import { IUser } from '../models/interfaces';
 
 interface SignUpResult {
-  user: User;
+  user: IUser;
   code: string;
 }
 
 interface SignInResult {
-  user: User;
+  user: IUser;
   token: string;
 }
 
@@ -51,25 +43,33 @@ export class AuthService {
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
     const results = await this.dbPool.query(
-      'SELECT * FROM users WHERE nickname = $1',
+      `
+      SELECT u.id, u.nickname, u.email, u.hashed_code,
+      json_build_object('id', r.id, 'name', r.name) AS role
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.nickname = $1
+      ORDER BY u.id;`,
       [nickname],
     );
 
     if (results.rows.length === 0) {
-      throw new Error('Invalid nickname or password.');
+      throw new Error('Invalid credentials.');
     }
 
     const user = results.rows[0];
 
-    const isValidCode = bcrypt.compare(code, user.hashed_code);
+    const isValidCode = await bcrypt.compare(code, user.hashed_code);
 
     if (!isValidCode) {
-      throw new Error('Invalid nickname or password.');
+      throw new Error('Invalid credentials.');
     }
 
     const token = jwt.sign({ userId: user.id }, this.secretKey, {
       expiresIn: '1h',
     });
+
+    delete user.hashed_code;
 
     return { user, token };
   }
