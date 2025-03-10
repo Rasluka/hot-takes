@@ -43,7 +43,13 @@ export class AuthService {
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
     const results = await this.dbPool.query(
-      'SELECT * FROM users WHERE nickname = $1',
+      `
+      SELECT u.id, u.nickname, u.email, u.hashed_code,
+      json_build_object('id', r.id, 'name', r.name) AS role
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.nickname = $1
+      ORDER BY u.id;`,
       [nickname],
     );
 
@@ -56,12 +62,14 @@ export class AuthService {
     const isValidCode = await bcrypt.compare(code, user.hashed_code);
 
     if (!isValidCode) {
-      throw new Error('Invalid nickname or password.');
+      throw new Error('Invalid credentials.');
     }
 
     const token = jwt.sign({ userId: user.id }, this.secretKey, {
       expiresIn: '1h',
     });
+
+    delete user.hashed_code;
 
     return { user, token };
   }

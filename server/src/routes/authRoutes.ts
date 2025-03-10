@@ -16,4 +16,11 @@ router.post(
   ),
 );
 
+router.post(
+  '/signin',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    authController.signIn(req, res, next),
+  ),
+);
+
 export default router;

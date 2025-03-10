@@ -17,12 +17,28 @@ export class AuthController {
       return next(new Error('Email and nickname are required.'));
     }
 
+    const lowerNickname = nickname.toLowerCase();
+
     const results = await this.authService.signUp(
-      nickname,
+      lowerNickname,
       email,
       actualRoleId,
     );
 
-    successApiResponse(res, 201, results, 'User created succesfully!');
+    return successApiResponse(res, 201, results, 'User created succesfully!');
+  }
+
+  async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { nickname, code } = req.body;
+
+    if (!nickname || !code || code.length < 8) {
+      return next(new Error('Invalid credentials.'));
+    }
+
+    const lowerNickname = nickname.toLowerCase();
+
+    const results = await this.authService.signIn(lowerNickname, code);
+
+    return successApiResponse(res, 200, results, 'Sign In succesfully');
   }
 }

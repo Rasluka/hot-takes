@@ -20,7 +20,12 @@ export class RoleController {
       return next(new Error('No roles found!'));
     }
 
-    successApiResponse(res, 200, results.rows, 'Roles retrieved succesfully!');
+    return successApiResponse(
+      res,
+      200,
+      results.rows,
+      'Roles retrieved succesfully!',
+    );
   }
 
   async getById(
@@ -53,7 +58,12 @@ export class RoleController {
 
     const results = await this.roleService.create(name);
 
-    successApiResponse(res, 201, results.rows[0], 'Role created successfully!');
+    return successApiResponse(
+      res,
+      201,
+      results.rows[0],
+      'Role created successfully!',
+    );
   }
 
   async updateById(

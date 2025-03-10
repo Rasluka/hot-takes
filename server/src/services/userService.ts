@@ -2,14 +2,14 @@ import { Pool, QueryResult } from 'pg';
 import { IUser } from '../models/interfaces';
 
 export class UserService {
-  private pool: Pool;
+  private dbPool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
+    this.dbPool = pool;
   }
 
   async getAll(): Promise<QueryResult<IUser>> {
-    const results = await this.pool.query(`
+    const results = await this.dbPool.query(`
       SELECT u.id, u.nickname, u.email,
       json_build_object('id', r.id, 'name', r.name) AS role
       FROM users u
@@ -21,7 +21,7 @@ export class UserService {
   }
 
   async getById(userId: string): Promise<QueryResult<IUser>> {
-    const results = await this.pool.query(
+    const results = await this.dbPool.query(
       `
       SELECT u.id, u.nickname, u.email,
       json_build_object('id', r.id, 'name', r.name) AS role
@@ -39,7 +39,7 @@ export class UserService {
     userId: string,
     roleId: string,
   ): Promise<QueryResult<IUser>> {
-    const results = this.pool.query(
+    const results = this.dbPool.query(
       `
           UPDATE users
           SET role_id = $2
@@ -53,7 +53,7 @@ export class UserService {
   }
 
   async delete(userId: string): Promise<QueryResult> {
-    const results = await this.pool.query(
+    const results = await this.dbPool.query(
       `
         DELETE FROM users
         WHERE id = $1
