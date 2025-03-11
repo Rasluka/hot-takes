@@ -1,4 +1,3 @@
-// middleware/checkRole.ts
 import { Request, Response, NextFunction } from 'express';
 import { IUser } from '../models/interfaces';
 
@@ -16,7 +15,7 @@ export const checkRole = (requiredRole: string) => {
   ): void => {
     const user = req.user;
 
-    if (!user || user.role.name !== requiredRole) {
+    if (!user || user.role.name.toLowerCase() !== requiredRole.toLowerCase()) {
       res
         .status(403)
         .json({ message: 'Access denied. Insufficient permissions.' });

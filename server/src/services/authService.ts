@@ -65,9 +65,13 @@ export class AuthService {
       throw new Error('Invalid credentials.');
     }
 
-    const token = jwt.sign({ userId: user.id }, this.secretKey, {
-      expiresIn: '1h',
-    });
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      this.secretKey,
+      {
+        expiresIn: '5h',
+      },
+    );
 
     delete user.hashed_code;
 

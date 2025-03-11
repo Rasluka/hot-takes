@@ -13,6 +13,7 @@ router.use(authenticateToken);
 const userService = new UserService(dbPool);
 const userController = new UserController(userService);
 
+// Get All Users
 router.get(
   '/',
   checkRole('admin'),
@@ -23,6 +24,7 @@ router.get(
   ),
 );
 
+// Get User by Id
 router.get(
   '/:userId',
   checkRole('admin'),
@@ -33,6 +35,7 @@ router.get(
   ),
 );
 
+// Update User Role
 router.patch(
   '/:userId/role',
   checkRole('admin'),
@@ -43,6 +46,7 @@ router.patch(
   ),
 );
 
+// Remove User
 router.delete(
   '/:id',
   checkRole('admin'),
