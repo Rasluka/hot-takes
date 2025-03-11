@@ -24,4 +24,11 @@ router.post(
   ),
 );
 
+router.patch(
+  '/:userId/regen-code',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    authController.regenerateCode(req, res, next),
+  ),
+);
+
 export default router;

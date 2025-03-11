@@ -41,4 +41,25 @@ export class AuthController {
 
     return successApiResponse(res, 200, results, 'Sign In succesfully');
   }
+
+  async regenerateCode(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return next(new Error('Invalid user id.'));
+    }
+
+    const results = await this.authService.regenerateCode(userId);
+
+    return successApiResponse(
+      res,
+      200,
+      results,
+      'Code regenerated successfully!',
+    );
+  }
 }

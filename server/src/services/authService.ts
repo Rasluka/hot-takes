@@ -14,6 +14,11 @@ interface SignInResult {
   token: string;
 }
 
+interface CodeRegenResult {
+  user: IUser;
+  newCode: string;
+}
+
 export class AuthService {
   private dbPool: Pool;
   private secretKey: string;
@@ -23,15 +28,24 @@ export class AuthService {
     this.secretKey = secretKey;
   }
 
+  private async generateCode(): Promise<{
+    newCode: string;
+    hashedCode: string;
+  }> {
+    // Generating and Hashing the new code
+    const newCode = nanoid(8).toUpperCase();
+    const saltRounds = 10;
+    const hashedCode = await bcrypt.hash(newCode, saltRounds);
+
+    return { newCode, hashedCode };
+  }
+
   async signUp(
     nickname: string,
     email: string,
     roleId: number,
   ): Promise<SignUpResult> {
-    // Generating and Hashing the new code
-    const newCode = nanoid(8).toUpperCase();
-    const saltRounds = 10;
-    const hashedCode = await bcrypt.hash(newCode, saltRounds);
+    const { newCode, hashedCode } = await this.generateCode();
 
     const results = await this.dbPool.query(
       'INSERT INTO users (email, nickname, hashed_code, role_id) VALUES ($1, $2, $3, $4) RETURNING *;',
@@ -76,5 +90,32 @@ export class AuthService {
     delete user.hashed_code;
 
     return { user, token };
+  }
+
+  async regenerateCode(userId: string): Promise<CodeRegenResult> {
+    const { newCode, hashedCode } = await this.generateCode();
+
+    await this.dbPool.query(
+      'UPDATE users SET hashed_code = $2 WHERE id = $1;',
+      [userId, hashedCode],
+    );
+
+    const userResult = await this.dbPool.query(
+      `
+      SELECT u.id, u.nickname, u.email,
+      json_build_object('id', r.id, 'name', r.name) AS role
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.id = $1;
+      `,
+      [userId],
+    );
+
+    if (userResult.rows.length === 0) {
+      throw new Error('User not found.');
+    }
+
+    const user: IUser = userResult.rows[0];
+    return { user, newCode };
   }
 }
