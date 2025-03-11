@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../services/authService';
-import { successApiResponse, errorApiResponse } from '../utils/apiResponse';
+import { successApiResponse } from '../utils/apiResponse';
 
 export class AuthController {
   private authService: AuthService;
@@ -9,41 +9,36 @@ export class AuthController {
     this.authService = authService;
   }
 
-  async signUp(req: Request, res: Response): Promise<void> {
+  async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { nickname, email, roleId } = req.body;
     const actualRoleId = roleId ? parseInt(roleId) : 1;
 
     if (!email || !nickname) {
-      errorApiResponse(res, 400, 'Email and nickname are required.');
+      return next(new Error('Email and nickname are required.'));
     }
 
-    try {
-      const results = await this.authService.signUp(
-        nickname,
-        email,
-        actualRoleId,
-      );
+    const lowerNickname = nickname.toLowerCase();
 
-      return successApiResponse(res, 201, results, 'User created succesfully!');
-    } catch (err) {
-      return errorApiResponse(res, 500, err);
+    const results = await this.authService.signUp(
+      lowerNickname,
+      email,
+      actualRoleId,
+    );
 
-      // if (err instanceof Error && "code" in err) {
-      //   if (err.code === "23505") {
-      //     // Unique violation error code
-      //     res
-      //       .status(400)
-      //       .json({ error: "Email, nickname, or code already in use" });
-      //   } else {
-      //     res
-      //       .status(500)
-      //       .json({ message: "Internal server error", actualError: err });
-      //   }
-      // } else {
-      //   res
-      //     .status(500)
-      //     .json({ message: "An unknown error occurred", error: err });
-      // }
+    return successApiResponse(res, 201, results, 'User created succesfully!');
+  }
+
+  async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { nickname, code } = req.body;
+
+    if (!nickname || !code || code.length < 8) {
+      return next(new Error('Invalid credentials.'));
     }
+
+    const lowerNickname = nickname.toLowerCase();
+
+    const results = await this.authService.signIn(lowerNickname, code);
+
+    return successApiResponse(res, 200, results, 'Sign In succesfully');
   }
 }
