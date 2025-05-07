@@ -1,6 +1,33 @@
-# Ignoring those module
-server/node_modules/
-client/node_modules/
+# Dependency directories 
+**/node_modules/
+**/.serverless/
+**/jspm_packages/
 
-.env
+# Build outputs 
+**/dist/
+**/build/
+**/.cache/
+**/.out/
+**/.next/
+
+# Logs & temp files 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 *.log
+
+# Environment 
+**/.env
+**/.env.*
+!.env.example  # Keep example files
+**/.env.local
+**/.env.development
+
+# Sensitive files 
+*.key
+*.pem
+*.cert
+
+# IDE 
+**/.vscode/
+!.vscode/extensions.json  # Keep recommended extensions
