@@ -1,30 +1,33 @@
-# Dependency directories
-node_modules/       # For both server & client
-.serverless/        # If using serverless
-jspm_packages/      # Rare, but possible
+# Dependency directories 
+**/node_modules/
+**/.serverless/
+**/jspm_packages/
 
-# Build & output folders
-dist/               # Vite/TS build output
-build/              # Common JS/React build dir
-.cache/             # Parcel/webpack cache
-.out/               # Next.js build (if used)
-.next/              # Next.js
+# Build outputs 
+**/dist/
+**/build/
+**/.cache/
+**/.out/
+**/.next/
 
-# Logs & temp files
+# Logs & temp files 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.log
 
-# Environment variables
-.env                # Default environment file
-.env.local          # Local overrides
-.env.development
+# Environment 
+**/.env
+**/.env.*
+!.env.example  # Keep example files
+**/.env.local
+**/.env.development
 
-# Sensitive files
+# Sensitive files 
 *.key
 *.pem
 *.cert
 
-# Ignoring vscode settings
-.vscode/
+# IDE 
+**/.vscode/
+!.vscode/extensions.json  # Keep recommended extensions
