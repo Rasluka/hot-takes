@@ -26,5 +26,5 @@
     /* Type Definitions */
     "types": []
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }
