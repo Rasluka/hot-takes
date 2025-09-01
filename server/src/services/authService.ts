@@ -61,7 +61,7 @@ export class AuthService {
       SELECT u.id, u.nickname, u.email, u.hashed_code,
       json_build_object('id', r.id, 'name', r.name) AS role
       FROM users u
-      JOIN roles r ON r.id = u.role_id
+      JOIN user_roles r ON r.id = u.role_id
       WHERE u.nickname = $1
       ORDER BY u.id;`,
       [nickname],

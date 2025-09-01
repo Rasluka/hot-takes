@@ -11,7 +11,7 @@ export class AuthController {
 
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { nickname, email, roleId } = req.body;
-    const actualRoleId = roleId ? parseInt(roleId) : 1;
+    const actualRoleId = roleId ? parseInt(roleId) : 2;
 
     if (!email || !nickname) {
       return next(new Error('Email and nickname are required.'));
