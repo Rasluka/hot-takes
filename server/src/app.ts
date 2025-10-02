@@ -11,10 +11,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Current API version
+const API_VERSION = '/api/v1';
+
 // Mounting the routes
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/roles', roleRouter);
+app.use(`${API_VERSION}/auth`, authRouter);
+app.use(`${API_VERSION}/users`, usersRouter);
+app.use(`${API_VERSION}/roles`, roleRouter);
 
 app.get('/', (_, res) => {
   res.json({

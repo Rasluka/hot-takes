@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import logger from '../utils/logger';
+import { AppError } from '../errors/AppError';
 
 export const errorHandler = (
   error: unknown,
@@ -8,10 +9,13 @@ export const errorHandler = (
   _next: NextFunction,
 ): void => {
   // Default statusCode but may be changed later is a custom error class is created
-  const statusCode = 500;
+  let statusCode = 500;
   let message = 'Internal server error.';
 
-  if (error instanceof Error) {
+  if (error instanceof AppError) {
+    statusCode = error.statusCode;
+    message = error.message;
+  } else if (error instanceof Error) {
     message = error.message;
   }
 
