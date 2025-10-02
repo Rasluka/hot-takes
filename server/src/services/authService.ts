@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { IUser } from '../models/interfaces';
+import { ConflictError } from '../errors/ConflictError';
 
 interface SignUpResult {
   user: IUser;
@@ -47,12 +48,20 @@ export class AuthService {
   ): Promise<SignUpResult> {
     const { newCode, hashedCode } = await this.generateCode();
 
-    const results = await this.dbPool.query(
-      'INSERT INTO users (email, nickname, hashed_code, role_id) VALUES ($1, $2, $3, $4) RETURNING *;',
-      [email, nickname, hashedCode, roleId],
-    );
+    try {
+      const results = await this.dbPool.query(
+        'INSERT INTO users (email, nickname, hashed_code, role_id) VALUES ($1, $2, $3, $4) RETURNING *;',
+        [email, nickname, hashedCode, roleId],
+      );
 
-    return { user: results.rows[0], code: newCode };
+      return { user: results.rows[0], code: newCode };
+    } catch (err: any) {
+      if (err.code === '23505') {
+        throw new ConflictError('Nickname or email already in use.');
+      }
+
+      throw err;
+    }
   }
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
