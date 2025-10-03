@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signUp } from "../services/authService";
+import { isValidEmail } from "../utils/validators";
 
 interface ISignUpStateForm {
   nickname: string;
@@ -10,7 +11,7 @@ interface ISignUpStateForm {
 export default function SignUp() {
   const [formData, setFormData] = useState<ISignUpStateForm>({
     nickname: "jorge1o",
-    email: "vargklee@hotmail.com",
+    email: "Vargklee@hotmail.com",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isNicknameError, setIsNicknameError] = useState<boolean>(false);
@@ -30,25 +31,30 @@ export default function SignUp() {
     setIsNicknameError(false);
     setIsEmailError(false);
 
-    try {
-      const res = await signUp(formData);
+    if (!isValidEmail(formData.email))
+      try {
+        const res = await signUp(formData);
 
-      console.log("SignUp Response: ", res);
-    } catch (err: any) {
-      console.error("error ===>", err);
-      const res = err.response;
+        console.log("SignUp Response: ", res);
+      } catch (err: any) {
+        const res = err.response;
+        console.error("error ===>", res);
 
-      if (res) {
-        const { status } = res;
+        if (res) {
+          const { status, data } = res;
+          const message = data.message.toLowerCase();
 
-        if (status === 409) {
-          setIsEmailError(true);
-          setIsNicknameError(true);
+          if (status === 409) {
+            if (message.includes("email")) {
+              setIsEmailError(true);
+            } else if (message.includes("nickname")) {
+              setIsNicknameError(true);
+            }
+          }
         }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -68,7 +74,7 @@ export default function SignUp() {
         />
         {isNicknameError && (
           <label className="label text-red-600">
-            Nick is already being used
+            Nickname is already being used
           </label>
         )}
 
@@ -80,6 +86,7 @@ export default function SignUp() {
           name="email"
           value={formData.email}
           onChange={onInputChange}
+          onFocus={() => setIsEmailError(false)}
         />
         {isEmailError && (
           <label className="label text-red-600">

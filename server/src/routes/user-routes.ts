@@ -1,16 +1,15 @@
 import express, { NextFunction, Response } from 'express';
-import dbPool from '../db';
-import { UserService } from '../services/userService';
-import { UserController } from '../controllers/userController';
-import { asyncWrapper } from '../utils/asyncWrapper';
-import { authenticateToken } from '../middleware/authMiddleware';
-import { AuthenticatedRequest, checkRole } from '../middleware/checkRole';
+import { UserService } from '../services/user-service';
+import { UserController } from '../controllers/user-controller';
+import { asyncWrapper } from '../utils/async-wrapper';
+import { authenticateToken } from '../middleware/auth-middleware';
+import { AuthenticatedRequest, checkRole } from '../middleware/check-role';
 
 const router = express.Router();
 
 router.use(authenticateToken);
 
-const userService = new UserService(dbPool);
+const userService = new UserService();
 const userController = new UserController(userService);
 
 // Get All Users
@@ -26,7 +25,7 @@ router.get(
 
 // Get User by Id
 router.get(
-  '/:userId',
+  '/:id',
   checkRole('admin'),
   asyncWrapper(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -37,7 +36,7 @@ router.get(
 
 // Update User Role
 router.patch(
-  '/:userId/role',
+  '/:id/role',
   checkRole('admin'),
   asyncWrapper(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

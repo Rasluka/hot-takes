@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
-import { errorHandler } from './middleware/errorHandler';
-import authRouter from './routes/authRoutes';
-import usersRouter from './routes/userRoutes';
-import roleRouter from './routes/roleRoutes';
+import { errorHandler } from './middleware/error-handler';
+import authRouter from './routes/auth-routes';
+import usersRouter from './routes/user-routes';
+import roleRouter from './routes/role-routes';
 import dbPool from './db';
 import cors from 'cors';
 
