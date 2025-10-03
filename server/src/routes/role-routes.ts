@@ -1,11 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
-import dbPool from '../db';
-import { RoleService } from '../services/roleService';
-import { RoleController } from '../controllers/roleController';
-import { asyncWrapper } from '../utils/asyncWrapper';
+import { RoleService } from '../services/role-service';
+import { RoleController } from '../controllers/role-controller';
+import { asyncWrapper } from '../utils/async-wrapper';
 
 const router = express.Router();
-const roleService = new RoleService(dbPool);
+const roleService = new RoleService();
 const roleController = new RoleController(roleService);
 
 router.get(

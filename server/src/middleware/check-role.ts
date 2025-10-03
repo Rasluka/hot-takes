@@ -16,9 +16,7 @@ export const checkRole = (requiredRole: string) => {
     const user = req.user;
 
     if (!user || user.role.name.toLowerCase() !== requiredRole.toLowerCase()) {
-      res
-        .status(403)
-        .json({ message: 'Access denied. Insufficient permissions.' });
+      res.status(403).json({ message: 'Access denied.' });
       return; // Stop further execution
     }
 

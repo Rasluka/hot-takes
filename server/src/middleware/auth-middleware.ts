@@ -1,9 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { IUser } from '../models/interfaces';
+
+interface TokenPayload {
+  userId: number;
+  role: { id: number; name: string };
+}
 
 interface AuthenticatedRequest extends Request {
-  user?: IUser;
+  user?: TokenPayload;
 }
 
 export function authenticateToken(
@@ -31,7 +35,7 @@ export function authenticateToken(
         return;
       }
 
-      req.user = user as IUser;
+      req.user = user as TokenPayload;
       next();
     },
   );

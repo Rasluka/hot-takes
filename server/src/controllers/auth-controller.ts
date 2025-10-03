@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { AuthService } from '../services/authService';
-import { successApiResponse } from '../utils/apiResponse';
+import { AuthService } from '../services/auth-service';
+import { successApiResponse } from '../utils/api-response';
 
 export class AuthController {
   private authService: AuthService;
@@ -10,8 +10,7 @@ export class AuthController {
   }
 
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { nickname, email, roleId } = req.body;
-    const actualRoleId = roleId ? parseInt(roleId) : 2;
+    const { nickname, email } = req.body;
 
     if (!email || !nickname) {
       return next(new Error('Email and nickname are required.'));
@@ -19,11 +18,7 @@ export class AuthController {
 
     const lowerNickname = nickname.toLowerCase();
 
-    const results = await this.authService.signUp(
-      lowerNickname,
-      email,
-      actualRoleId,
-    );
+    const results = await this.authService.signUp(lowerNickname, email);
 
     return successApiResponse(res, 201, results, 'User created succesfully!');
   }
@@ -40,26 +35,5 @@ export class AuthController {
     const results = await this.authService.signIn(lowerNickname, code);
 
     return successApiResponse(res, 200, results, 'Sign In succesfully');
-  }
-
-  async regenerateCode(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const userId = req.params.userId;
-
-    if (!userId) {
-      return next(new Error('Invalid user id.'));
-    }
-
-    const results = await this.authService.regenerateCode(userId);
-
-    return successApiResponse(
-      res,
-      200,
-      results,
-      'Code regenerated successfully!',
-    );
   }
 }
