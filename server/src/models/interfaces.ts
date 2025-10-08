@@ -8,6 +8,11 @@ export interface IUser {
   nickname: string;
   email: string;
   hashed_code?: string;
-  role_id: number;
+  role_id?: number;
   role: IRole;
+}
+
+export interface ISignUpResult {
+  user: IUser;
+  code: string;
 }
