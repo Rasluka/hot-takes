@@ -4,7 +4,7 @@ import { errorHandler } from './middleware/error-handler';
 import authRouter from './routes/auth-routes';
 import usersRouter from './routes/user-routes';
 import roleRouter from './routes/role-routes';
-import dbPool from './db';
+import prisma from './prisma';
 import cors from 'cors';
 
 const app = express();
@@ -31,7 +31,7 @@ const PORT = process.env.SERVER_PORT;
 
 async function startServer() {
   try {
-    await dbPool.query('SELECT 1');
+    await prisma.$queryRaw`SELECT 1`;
 
     app.listen(PORT, () => {
       console.log(`Server is running at http://localhost:${PORT}`);

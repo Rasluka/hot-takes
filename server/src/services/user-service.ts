@@ -1,9 +1,19 @@
 import { IUser } from '../models/interfaces';
 import prisma from '../prisma';
 import { formatUser } from '../utils/format-user';
+import { ISignUpResult } from '../models/interfaces';
+import { createUser } from '../utils/create-user';
 
 export class UserService {
   constructor() {}
+
+  async createUser(
+    nickname: string,
+    email: string,
+    roleId: string,
+  ): Promise<ISignUpResult> {
+    return createUser(nickname, email, parseInt(roleId));
+  }
 
   async getAll(): Promise<IUser[]> {
     const users = await prisma.users.findMany({

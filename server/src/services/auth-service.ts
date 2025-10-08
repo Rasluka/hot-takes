@@ -1,15 +1,9 @@
-import { nanoid } from 'nanoid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { IUser } from '../models/interfaces';
-import { ConflictError } from '../errors/conflict-error';
 import prisma from '../prisma';
 import { formatUser } from '../utils/format-user';
-
-interface SignUpResult {
-  user: IUser;
-  code: string;
-}
+import { ISignUpResult, IUser } from '../models/interfaces';
+import { createUser } from '../utils/create-user';
 
 interface SignInResult {
   user: IUser;
@@ -23,43 +17,8 @@ export class AuthService {
     this.secretKey = secretKey;
   }
 
-  async signUp(
-    nickname: string,
-    email: string,
-    roleId = 2,
-  ): Promise<SignUpResult> {
-    const { newCode, hashedCode } = await this.generateCode();
-
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedNickname = nickname.trim().toLowerCase();
-
-    try {
-      const user = await prisma.users.create({
-        data: {
-          email: normalizedEmail,
-          nickname: normalizedNickname,
-          hashed_code: hashedCode,
-          role_id: roleId,
-        },
-        include: {
-          user_roles: true,
-        },
-      });
-
-      const formattedUser: IUser = formatUser(user);
-
-      return { user: formattedUser, code: newCode };
-    } catch (err: any) {
-      if (err.code === 'P2002') {
-        // Prisma unique constraint error
-        if (err.meta?.target?.includes('nickname')) {
-          throw new ConflictError('Nickname already in use.');
-        } else if (err.meta?.target?.includes('email')) {
-          throw new ConflictError('Email already in use.');
-        }
-      }
-      throw err;
-    }
+  async signUp(nickname: string, email: string): Promise<ISignUpResult> {
+    return createUser(nickname, email, 2);
   }
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
@@ -92,17 +51,5 @@ export class AuthService {
     delete formattedUser.hashed_code;
 
     return { user: formattedUser, token };
-  }
-
-  private async generateCode(): Promise<{
-    newCode: string;
-    hashedCode: string;
-  }> {
-    // Generating and Hashing the new code
-    const newCode = nanoid(8).toUpperCase();
-    const saltRounds = 10;
-    const hashedCode = await bcrypt.hash(newCode, saltRounds);
-
-    return { newCode, hashedCode };
   }
 }
