@@ -3,6 +3,7 @@ import prisma from '../prisma';
 import { formatUser } from '../utils/format-user';
 import { ISignUpResult } from '../models/interfaces';
 import { createUser } from '../utils/create-user';
+import { sendCodeEmail } from './email-service';
 
 export class UserService {
   constructor() {}
@@ -11,8 +12,21 @@ export class UserService {
     nickname: string,
     email: string,
     roleId: string,
-  ): Promise<ISignUpResult> {
-    return createUser(nickname, email, parseInt(roleId));
+  ): Promise<ISignUpResult & { emailSent: boolean }> {
+    const signUpRes: ISignUpResult = await createUser(
+      nickname,
+      email,
+      parseInt(roleId),
+    );
+    let emailSent = true;
+
+    try {
+      await sendCodeEmail(email, nickname, signUpRes.code);
+    } catch (err) {
+      emailSent = false;
+    }
+
+    return { ...signUpRes, emailSent };
   }
 
   async getAll(): Promise<IUser[]> {

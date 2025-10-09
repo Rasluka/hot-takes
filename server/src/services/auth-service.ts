@@ -4,6 +4,7 @@ import prisma from '../prisma';
 import { formatUser } from '../utils/format-user';
 import { ISignUpResult, IUser } from '../models/interfaces';
 import { createUser } from '../utils/create-user';
+import { sendCodeEmail } from './email-service';
 
 interface SignInResult {
   user: IUser;
@@ -17,8 +18,20 @@ export class AuthService {
     this.secretKey = secretKey;
   }
 
-  async signUp(nickname: string, email: string): Promise<ISignUpResult> {
-    return createUser(nickname, email, 2);
+  async signUp(
+    nickname: string,
+    email: string,
+  ): Promise<ISignUpResult & { emailSent: boolean }> {
+    const signUpRes: ISignUpResult = await createUser(nickname, email, 2);
+    let emailSent = true;
+
+    try {
+      await sendCodeEmail(email, nickname, signUpRes.code);
+    } catch (err) {
+      emailSent = false;
+    }
+
+    return { ...signUpRes, emailSent };
   }
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {

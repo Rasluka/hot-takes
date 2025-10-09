@@ -16,7 +16,9 @@
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
+    "@types/handlebars": "^4.0.40",
     "@types/jsonwebtoken": "^9.0.8",
+    "@types/nodemailer": "^7.0.2",
     "@types/pg": "^8.11.11",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
@@ -38,8 +40,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "nanoid": "^5.0.9",
+    "nodemailer": "^7.0.9",
     "winston": "^3.17.0"
   }
 }
