@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* :root {
-  background-color: #222831;
-} */
+:root {
+  --font-roboto: 'Roboto', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-manrope: 'Manrope', sans-serif;
+}
+
+.roboto { font-family: var(--font-roboto); }
+.montserrat { font-family: var(--font-montserrat); }
+.manrope { font-family: var(--font-manrope); }
+
+body {
+  font-family: var(--font-montserrat);
+}
