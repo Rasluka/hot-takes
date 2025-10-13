@@ -1,14 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
-// import dbPool from '../db';
 import { AuthService } from '../services/auth-service';
 import { AuthController } from '../controllers/auth-controller';
 import { asyncWrapper } from '../utils/async-wrapper';
+import { authenticateToken } from '../middleware/auth-middleware';
 const jwtKey = process.env.JWT_SECRET || '';
-// const expTokenTime: string = process.env.TOKEN_EXPIRATION_TIME || '1h';
 
 const router = express.Router();
 const authService = new AuthService(jwtKey);
-// const authService = new AuthService();
 const authController = new AuthController(authService);
 
 router.post(
@@ -22,6 +20,14 @@ router.post(
   '/signin',
   asyncWrapper((req: Request, res: Response, next: NextFunction) =>
     authController.signIn(req, res, next),
+  ),
+);
+
+router.get(
+  '/me',
+  authenticateToken,
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    authController.getCurrentUser(req, res, next),
   ),
 );
 

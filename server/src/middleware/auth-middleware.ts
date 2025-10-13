@@ -1,22 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-interface TokenPayload {
-  userId: number;
-  role: { id: number; name: string };
-}
-
-interface AuthenticatedRequest extends Request {
-  user?: TokenPayload;
-}
+import { AuthenticatedRequest, TokenPayload } from '../models/auth-request';
 
 export function authenticateToken(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ): void {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     res.status(401).json({ message: 'Access denied. No token provided.' });
