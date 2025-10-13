@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { login } from "../services/authService";
+import { onGlobalError } from "../utils/global-error";
 
 interface ISignInStateForm {
   nickname: string;
@@ -8,8 +10,8 @@ interface ISignInStateForm {
 
 export default function SignIn() {
   const [formData, setFormData] = useState<ISignInStateForm>({
-    nickname: "",
-    code: "",
+    nickname: "jorgeobando1234",
+    code: "JLICJRHR",
   });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,8 +23,20 @@ export default function SignIn() {
     });
   };
 
-  const onSubmitClicked = () => {
+  const onSubmitClicked = async () => {
     console.table(formData);
+
+    if (!formData.nickname || !formData.code) return null;
+
+    try {
+      const res = await login(formData);
+
+      console.log(res);
+    } catch (err) {
+      console.error(err);
+
+      onGlobalError("Something went wrong!");
+    }
   };
 
   return (
@@ -58,8 +72,8 @@ export default function SignIn() {
           Login
         </button>
 
-        <p className="text-center">Or</p>
-        {/* <p>Create New Account</p> */}
+        <div className="divider divider-secondary">OR</div>
+
         <Link to="/signup" className="link link-secondary text-center">
           Create New Account
         </Link>

@@ -7,6 +7,11 @@ interface SignUpData {
   email: string;
 }
 
+interface SignInData {
+  nickname: string;
+  code: string;
+}
+
 const apiClient = axios.create({
   baseURL: `${API_URL}/auth`,
   headers: {
@@ -24,12 +29,24 @@ export const signUp = async (data: SignUpData) => {
   }
 };
 
-export const login = async (nickname: string, code: string) => {
+export const login = async (data: SignInData) => {
   try {
-    const res = await apiClient.post("login", { nickname, code });
+    const res = await apiClient.post("signin", data);
 
     return res.data;
   } catch (error) {
     throw error;
+  }
+};
+
+export const getCurrentUser = async (token: string) => {
+  try {
+    const res = await apiClient.get("me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return res.data;
+  } catch (err) {
+    throw err;
   }
 };
