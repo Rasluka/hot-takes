@@ -5,6 +5,7 @@ import { formatUser } from '../utils/format-user';
 import { ISignUpResult, IUser } from '../models/interfaces';
 import { createUser } from '../utils/create-user';
 import { sendCodeEmail } from './email-service';
+import { NotFound } from '../errors/not-found';
 
 interface SignInResult {
   user: IUser;
@@ -61,8 +62,19 @@ export class AuthService {
       },
     );
 
-    delete formattedUser.hashed_code;
-
     return { user: formattedUser, token };
+  }
+
+  async getCurrentUser(userId: number): Promise<IUser> {
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: { user_roles: true },
+    });
+
+    if (!user) {
+      throw new NotFound('User not found!');
+    }
+
+    return formatUser(user);
   }
 }
