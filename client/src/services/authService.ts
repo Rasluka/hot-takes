@@ -18,7 +18,7 @@ export const signUp = async (data: SignUpData) => {
   try {
     const res = await apiClient.post("signup", data);
 
-    return res;
+    return res.data;
   } catch (error) {
     throw error;
   }
@@ -28,7 +28,7 @@ export const login = async (nickname: string, code: string) => {
   try {
     const res = await apiClient.post("login", { nickname, code });
 
-    return res;
+    return res.data;
   } catch (error) {
     throw error;
   }

@@ -2,20 +2,31 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signUp } from "../services/authService";
 import { isValidEmail } from "../utils/validators";
+import toast, { Toaster } from "react-hot-toast";
+import { CodeModal } from "../components/CodeModal";
+import { useNavigate } from "react-router-dom";
 
 interface ISignUpStateForm {
   nickname: string;
   email: string;
 }
 
+interface INewUser {
+  nickname: string;
+  code: string;
+}
+
 export default function SignUp() {
   const [formData, setFormData] = useState<ISignUpStateForm>({
-    nickname: "jorge1o",
-    email: "Vargklee@hotmail.com",
+    nickname: "",
+    email: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isNicknameError, setIsNicknameError] = useState<boolean>(false);
   const [isEmailError, setIsEmailError] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newUserData, setNewUserData] = useState<INewUser | null>(null);
+  const navigate = useNavigate();
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,30 +42,59 @@ export default function SignUp() {
     setIsNicknameError(false);
     setIsEmailError(false);
 
-    if (!isValidEmail(formData.email))
-      try {
-        const res = await signUp(formData);
+    if (!isValidEmail(formData.email)) {
+      setIsEmailError(true);
+      setIsLoading(false);
+      return;
+    }
 
-        console.log("SignUp Response: ", res);
-      } catch (err: any) {
-        const res = err.response;
-        console.error("error ===>", res);
+    try {
+      const res = await signUp(formData);
+      const { data } = res;
+      const { code, user } = data;
 
-        if (res) {
-          const { status, data } = res;
-          const message = data.message.toLowerCase();
+      if (code && user) {
+        setShowModal(true);
+        setNewUserData({
+          nickname: user.nickname,
+          code: code,
+        });
+      } else {
+        throw new Error("Something went wrong!!");
+      }
+    } catch (err: any) {
+      const res = err.response;
+      console.error("error ===>", res);
+      const errMsg = res?.data?.message;
 
-          if (status === 409) {
-            if (message.includes("email")) {
-              setIsEmailError(true);
-            } else if (message.includes("nickname")) {
-              setIsNicknameError(true);
-            }
+      toast.error(errMsg, {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+
+      if (res) {
+        const { status, data } = res;
+        const message = data.message.toLowerCase();
+
+        if (status === 409) {
+          if (message.includes("email")) {
+            setIsEmailError(true);
+          } else if (message.includes("nickname")) {
+            setIsNicknameError(true);
           }
         }
-      } finally {
-        setIsLoading(false);
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onModalClose = () => {
+    setShowModal(false);
+    navigate("/signin");
   };
 
   return (
@@ -62,7 +102,7 @@ export default function SignUp() {
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
         <legend className="fieldset-legend text-2xl">Sign Up</legend>
 
-        <label className="label">Nickname</label>
+        <label className="label text-secondary">Nickname</label>
         <input
           type="text"
           className={`input ${isNicknameError && "input-error"}`}
@@ -78,7 +118,7 @@ export default function SignUp() {
           </label>
         )}
 
-        <label className="label">Email</label>
+        <label className="label text-secondary">Email</label>
         <input
           type="email"
           className={`input ${isEmailError && "input-error"}`}
@@ -95,7 +135,7 @@ export default function SignUp() {
         )}
 
         <button
-          className="btn btn-secondary mt-4"
+          className="btn btn-outline btn-secondary mt-4"
           disabled={!formData.nickname || !formData.email || isLoading}
           onClick={onSubmitClicked}
         >
@@ -106,11 +146,23 @@ export default function SignUp() {
           )}
         </button>
 
+        <div className="divider divider-secondary">OR</div>
         <p className="text-center">Do you already have an account?</p>
         <Link to="/signin" className="link link-secondary text-center">
           Log In
         </Link>
       </fieldset>
+
+      <Toaster position="top-right" />
+
+      {newUserData && showModal && (
+        <CodeModal
+          nickname={newUserData.nickname}
+          code={newUserData.code}
+          isOpen={showModal}
+          onClose={onModalClose}
+        />
+      )}
     </div>
   );
 }
