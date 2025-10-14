@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 export function MainNavBar() {
+  const { isAuthenticated, logout } = useUser();
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -71,9 +74,15 @@ export function MainNavBar() {
         </ul>
       </div>
       <div className="navbar-end">
-        <Link to="/signin" className="btn btn-outline btn-primary">
-          Sign In
-        </Link>
+        {isAuthenticated ? (
+          <button className="btn btn-outline btn-secondary" onClick={logout}>
+            Log Out
+          </button>
+        ) : (
+          <Link to="/signin" className="btn btn-outline btn-primary">
+            Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

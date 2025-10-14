@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { createAxiosInstance } from "./apiService";
 
 interface SignUpData {
   nickname: string;
@@ -12,12 +10,7 @@ interface SignInData {
   code: string;
 }
 
-const apiClient = axios.create({
-  baseURL: `${API_URL}/auth`,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const apiClient = createAxiosInstance("auth", { withCredentials: true });
 
 export const signUp = async (data: SignUpData) => {
   try {
@@ -39,13 +32,21 @@ export const login = async (data: SignInData) => {
   }
 };
 
-export const getCurrentUser = async (token: string) => {
+export const getCurrentUser = async () => {
   try {
-    const res = await apiClient.get("me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await apiClient.get("me");
 
     return res.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const userLogout = async () => {
+  try {
+    const res = await apiClient.get("logout");
+
+    return res;
   } catch (err) {
     throw err;
   }

@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { login } from "../services/authService";
 import { onGlobalError } from "../utils/global-error";
+import { useUser } from "../contexts/UserContext";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ISignInStateForm {
   nickname: string;
@@ -10,9 +13,11 @@ interface ISignInStateForm {
 
 export default function SignIn() {
   const [formData, setFormData] = useState<ISignInStateForm>({
-    nickname: "jorgeobando1234",
-    code: "JLICJRHR",
+    nickname: "",
+    code: "",
   });
+  const userContext = useUser();
+  const navigate = useNavigate();
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,9 +34,10 @@ export default function SignIn() {
     if (!formData.nickname || !formData.code) return null;
 
     try {
-      const res = await login(formData);
-
-      console.log(res);
+      const { data } = await login(formData);
+      userContext.login(data.user);
+      toast.success("Logged in successfully!");
+      navigate("/");
     } catch (err) {
       console.error(err);
 
