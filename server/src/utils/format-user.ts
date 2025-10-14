@@ -1,16 +1,16 @@
 import { IUser } from '../models/interfaces';
-import { users as PrismaUser } from '../generated/prisma';
+import { User as PrismaUser } from '../generated/prisma';
 
 export function formatUser(
-  user: PrismaUser & { user_roles: { id: number; name: string } },
+  user: PrismaUser & { role: { id: number; name: string } },
 ): IUser {
   return {
     id: user.id,
     nickname: user.nickname,
     email: user.email,
     role: {
-      id: user.user_roles.id,
-      name: user.user_roles.name,
+      id: user.role.id,
+      name: user.role.name,
     },
   };
 }

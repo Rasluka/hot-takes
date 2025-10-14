@@ -36,9 +36,9 @@ export class AuthService {
   }
 
   async signIn(nickname: string, code: string): Promise<SignInResult> {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: { nickname },
-      include: { user_roles: true },
+      include: { role: true },
     });
 
     // Nickname doesnt exist
@@ -46,7 +46,7 @@ export class AuthService {
       throw new Error('Invalid credentials.');
     }
 
-    const isValidCode = await bcrypt.compare(code, user.hashed_code);
+    const isValidCode = await bcrypt.compare(code, user.hashedCode);
 
     if (!isValidCode) {
       throw new Error('Invalid credentials.');
@@ -66,9 +66,9 @@ export class AuthService {
   }
 
   async getCurrentUser(userId: number): Promise<IUser> {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { user_roles: true },
+      include: { role: true },
     });
 
     if (!user) {

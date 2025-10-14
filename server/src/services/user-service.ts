@@ -30,8 +30,8 @@ export class UserService {
   }
 
   async getAll(): Promise<IUser[]> {
-    const users = await prisma.users.findMany({
-      include: { user_roles: true },
+    const users = await prisma.user.findMany({
+      include: { role: true },
       orderBy: { id: 'asc' },
     });
 
@@ -39,8 +39,8 @@ export class UserService {
   }
 
   async getById(userId: string): Promise<IUser | null> {
-    const user = await prisma.users.findUnique({
-      include: { user_roles: true },
+    const user = await prisma.user.findUnique({
+      include: { role: true },
       where: { id: parseInt(userId) },
     });
 
@@ -52,19 +52,19 @@ export class UserService {
   }
 
   async updateUserRole(userId: string, roleId: string): Promise<IUser> {
-    const user = await prisma.users.update({
+    const user = await prisma.user.update({
       where: { id: parseInt(userId) },
-      data: { role_id: parseInt(roleId) },
-      include: { user_roles: true },
+      data: { roleId: parseInt(roleId) },
+      include: { role: true },
     });
 
     return formatUser(user);
   }
 
   async deleteById(userId: string): Promise<IUser> {
-    const user = await prisma.users.delete({
+    const user = await prisma.user.delete({
       where: { id: parseInt(userId) },
-      include: { user_roles: true },
+      include: { role: true },
     });
 
     return formatUser(user);
