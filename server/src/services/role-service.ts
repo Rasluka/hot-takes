@@ -5,13 +5,13 @@ export class RoleService {
   constructor() {}
 
   async getAll(): Promise<IRole[]> {
-    const roles = await prisma.user_roles.findMany();
+    const roles = await prisma.userRole.findMany();
 
     return roles;
   }
 
   async getById(id: string): Promise<IRole | null> {
-    const role = await prisma.user_roles.findUnique({
+    const role = await prisma.userRole.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -19,13 +19,13 @@ export class RoleService {
   }
 
   async create(name: string): Promise<IRole> {
-    const role = await prisma.user_roles.create({ data: { name } });
+    const role = await prisma.userRole.create({ data: { name } });
 
     return role;
   }
 
   async updateById(id: string, name: string): Promise<IRole> {
-    const role = await prisma.user_roles.update({
+    const role = await prisma.userRole.update({
       where: { id: parseInt(id) },
       data: { name },
     });
@@ -34,7 +34,7 @@ export class RoleService {
   }
 
   async deleteById(id: string): Promise<IRole> {
-    const role = await prisma.user_roles.delete({
+    const role = await prisma.userRole.delete({
       where: { id: parseInt(id) },
     });
 

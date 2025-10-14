@@ -13,15 +13,15 @@ export async function createUser(
   const normalizedEmail = email.trim().toLowerCase();
   const normalizedNickname = nickname.trim().toLowerCase();
   try {
-    const user = await prisma.users.create({
+    const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
         nickname: normalizedNickname,
-        hashed_code: hashedCode,
-        role_id: roleId,
+        hashedCode: hashedCode,
+        roleId: roleId,
       },
       include: {
-        user_roles: true,
+        role: true,
       },
     });
 
