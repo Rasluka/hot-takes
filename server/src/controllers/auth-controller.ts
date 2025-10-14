@@ -65,4 +65,10 @@ export class AuthController {
 
     return successApiResponse(res, 200, result, 'User found!');
   }
+
+  async logout(_req: AuthenticatedRequest, res: Response, _next: NextFunction) {
+    res.clearCookie('token');
+
+    return successApiResponse(res, 200, null, 'Logged out successfully!');
+  }
 }

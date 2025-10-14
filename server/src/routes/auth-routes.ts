@@ -31,4 +31,11 @@ router.get(
   ),
 );
 
+router.get(
+  '/logout',
+  asyncWrapper((req: Request, res: Response, next: NextFunction) =>
+    authController.logout(req, res, next),
+  ),
+);
+
 export default router;
