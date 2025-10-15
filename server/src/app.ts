@@ -4,6 +4,7 @@ import { errorHandler } from './middleware/error-handler';
 import authRouter from './routes/auth-routes';
 import usersRouter from './routes/user-routes';
 import roleRouter from './routes/role-routes';
+import { createTakeRouter } from './routes/take-route';
 import prisma from './prisma';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -25,6 +26,7 @@ const API_VERSION = '/api/v1';
 app.use(`${API_VERSION}/auth`, authRouter);
 app.use(`${API_VERSION}/users`, usersRouter);
 app.use(`${API_VERSION}/roles`, roleRouter);
+app.use(`${API_VERSION}/takes`, createTakeRouter(prisma));
 
 app.get('/', (_, res) => {
   res.json({
