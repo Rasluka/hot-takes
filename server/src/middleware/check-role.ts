@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { IUser } from '../models/interfaces';
 
 // Extend the Request type to include the `user` property
 export interface AuthenticatedRequest extends Request {
-  user?: IUser;
+  user?: {
+    userId: number;
+    role: string;
+  };
 }
 
 // Define the checkRole middleware
@@ -15,11 +17,11 @@ export const checkRole = (requiredRole: string) => {
   ): void => {
     const user = req.user;
 
-    if (!user || user.role.name.toLowerCase() !== requiredRole.toLowerCase()) {
+    if (!user || user.role.toLowerCase() !== requiredRole.toLowerCase()) {
       res.status(403).json({ message: 'Access denied.' });
-      return; // Stop further execution
+      return;
     }
 
-    next(); // Proceed to the next middleware or route handler
+    next();
   };
 };

@@ -1,27 +1,44 @@
-import { IUser } from '../models/interfaces';
-import prisma from '../prisma';
-import { formatUser } from '../utils/format-user';
-import { ISignUpResult } from '../models/interfaces';
-import { createUser } from '../utils/create-user';
+import { createUserInDb } from './user-creation';
 import { sendCodeEmail } from './email-service';
+import { PrismaClient } from '@prisma/client';
+import { NotFoundError } from '../errors/not-found-error';
+import { User, UserDto, UserCreationResult } from '../types/user';
+import { formatUser } from '../utils/format-user';
 
 export class UserService {
-  constructor() {}
+  constructor(private readonly prisma: PrismaClient) {}
 
-  async createUser(
-    nickname: string,
-    email: string,
-    roleId: string,
-  ): Promise<ISignUpResult & { emailSent: boolean }> {
-    const signUpRes: ISignUpResult = await createUser(
-      nickname,
-      email,
-      parseInt(roleId),
+  async getAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      include: { role: true },
+      orderBy: { id: 'asc' },
+    });
+
+    if (users.length === 0) throw new NotFoundError('No users found!');
+
+    return users.map(formatUser);
+  }
+
+  async getById(id: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      include: { role: true },
+      where: { id },
+    });
+
+    if (!user) throw new NotFoundError('User not found!');
+
+    return formatUser(user);
+  }
+
+  async create(userData: UserDto): Promise<UserCreationResult> {
+    const signUpRes: UserCreationResult = await createUserInDb(
+      this.prisma,
+      userData,
     );
     let emailSent = true;
 
     try {
-      await sendCodeEmail(email, nickname, signUpRes.code);
+      await sendCodeEmail(userData.email, userData.nickname, signUpRes.code);
     } catch (err) {
       emailSent = false;
     }
@@ -29,44 +46,32 @@ export class UserService {
     return { ...signUpRes, emailSent };
   }
 
-  async getAll(): Promise<IUser[]> {
-    const users = await prisma.user.findMany({
-      include: { role: true },
-      orderBy: { id: 'asc' },
-    });
+  async updateUserRole(id: number, roleId: number): Promise<User> {
+    try {
+      const user = await this.prisma.user.update({
+        where: { id },
+        data: { roleId },
+        include: { role: true },
+      });
 
-    return users.map(formatUser);
-  }
-
-  async getById(userId: string): Promise<IUser | null> {
-    const user = await prisma.user.findUnique({
-      include: { role: true },
-      where: { id: parseInt(userId) },
-    });
-
-    if (!user) {
-      return null;
+      return formatUser(user);
+    } catch (err: any) {
+      if (err.code === 'P2025') throw new NotFoundError('User not found!');
+      throw err;
     }
-
-    return formatUser(user);
   }
 
-  async updateUserRole(userId: string, roleId: string): Promise<IUser> {
-    const user = await prisma.user.update({
-      where: { id: parseInt(userId) },
-      data: { roleId: parseInt(roleId) },
-      include: { role: true },
-    });
+  async deleteById(id: number): Promise<User> {
+    try {
+      const user = await this.prisma.user.delete({
+        where: { id },
+        include: { role: true },
+      });
 
-    return formatUser(user);
-  }
-
-  async deleteById(userId: string): Promise<IUser> {
-    const user = await prisma.user.delete({
-      where: { id: parseInt(userId) },
-      include: { role: true },
-    });
-
-    return formatUser(user);
+      return formatUser(user);
+    } catch (err: any) {
+      if (err.code === 'P2025') throw new NotFoundError('User not found!');
+      throw err;
+    }
   }
 }

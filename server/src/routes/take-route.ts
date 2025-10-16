@@ -3,7 +3,7 @@ import { TakeService } from '../services/take-service';
 import { TakeController } from '../controllers/take-controller';
 import { asyncWrapper } from '../utils/async-wrapper';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken } from '../middleware/auth-middleware';
+import { authenticateToken } from '../middleware/auth-token';
 
 export const createTakeRouter = (prisma: PrismaClient) => {
   const router = express.Router();

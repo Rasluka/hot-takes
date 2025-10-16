@@ -1,43 +1,50 @@
-import { IRole } from '../models/interfaces';
-import prisma from '../prisma';
+import { PrismaClient } from '@prisma/client';
+import { Role } from '../types/role';
+import { NotFoundError } from '../errors/not-found-error';
 
 export class RoleService {
-  constructor() {}
+  constructor(private readonly prisma: PrismaClient) {}
 
-  async getAll(): Promise<IRole[]> {
-    const roles = await prisma.userRole.findMany();
+  async getAll(): Promise<Role[]> {
+    const roles = await this.prisma.userRole.findMany();
+
+    if (roles.length === 0) throw new NotFoundError('No roles found!');
 
     return roles;
   }
 
-  async getById(id: string): Promise<IRole | null> {
-    const role = await prisma.userRole.findUnique({
-      where: { id: parseInt(id) },
+  async getById(id: number): Promise<Role> {
+    const role = await this.prisma.userRole.findUnique({
+      where: { id: id },
     });
+
+    if (!role) throw new NotFoundError('Role not found!');
 
     return role;
   }
 
-  async create(name: string): Promise<IRole> {
-    const role = await prisma.userRole.create({ data: { name } });
-
-    return role;
+  async create(name: string): Promise<Role> {
+    return this.prisma.userRole.create({ data: { name } });
   }
 
-  async updateById(id: string, name: string): Promise<IRole> {
-    const role = await prisma.userRole.update({
-      where: { id: parseInt(id) },
-      data: { name },
-    });
-
-    return role;
+  async updateById(id: number, name: string): Promise<Role> {
+    try {
+      return this.prisma.userRole.update({
+        where: { id },
+        data: { name },
+      });
+    } catch (err: any) {
+      if (err.code === 'P2025') throw new NotFoundError('Role not found!');
+      throw err;
+    }
   }
 
-  async deleteById(id: string): Promise<IRole> {
-    const role = await prisma.userRole.delete({
-      where: { id: parseInt(id) },
-    });
-
-    return role;
+  async deleteById(id: number): Promise<Role> {
+    try {
+      return this.prisma.userRole.delete({ where: { id } });
+    } catch (err: any) {
+      if (err.code === 'P2025') throw new NotFoundError('Role not found!');
+      throw err;
+    }
   }
 }

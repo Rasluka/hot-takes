@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 import { errorHandler } from './middleware/error-handler';
-import authRouter from './routes/auth-routes';
-import usersRouter from './routes/user-routes';
-import roleRouter from './routes/role-routes';
+import { createAuthRouter } from './routes/auth-route';
+import { createUserRouter } from './routes/user-route';
+import { createRoleRouter } from './routes/role-route';
 import { createTakeRouter } from './routes/take-route';
 import prisma from './prisma';
 import cors from 'cors';
@@ -23,9 +23,9 @@ app.use(cookieParser());
 const API_VERSION = '/api/v1';
 
 // Mounting the routes
-app.use(`${API_VERSION}/auth`, authRouter);
-app.use(`${API_VERSION}/users`, usersRouter);
-app.use(`${API_VERSION}/roles`, roleRouter);
+app.use(`${API_VERSION}/auth`, createAuthRouter(prisma));
+app.use(`${API_VERSION}/users`, createUserRouter(prisma));
+app.use(`${API_VERSION}/roles`, createRoleRouter(prisma));
 app.use(`${API_VERSION}/takes`, createTakeRouter(prisma));
 
 app.get('/', (_, res) => {

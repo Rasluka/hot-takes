@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { RoleService } from '../services/role-service';
 import { successApiResponse } from '../utils/api-response';
-import { IRole } from '../models/interfaces';
-import { NotFound } from '../errors/not-found';
+import { Role } from '../types/role';
+import { BadRequest } from '../errors/bad-request';
 
 export class RoleController {
   private roleService: RoleService;
@@ -11,16 +11,8 @@ export class RoleController {
     this.roleService = roleService;
   }
 
-  async getAll(
-    _req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const results: IRole[] = await this.roleService.getAll();
-
-    if (results.length === 0) {
-      return next(new NotFound('No roles found!'));
-    }
+  getAll = async (_req: Request, res: Response): Promise<void> => {
+    const results: Role[] = await this.roleService.getAll();
 
     return successApiResponse(
       res,
@@ -28,76 +20,46 @@ export class RoleController {
       results,
       'Roles retrieved succesfully!',
     );
-  }
+  };
 
-  async getById(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const roleId = req.params.id;
+  getById = async (req: Request, res: Response): Promise<void> => {
+    const roleId = Number(req.params.id);
 
-    const result: IRole | null = await this.roleService.getById(roleId);
+    if (isNaN(roleId)) throw new BadRequest('Invalid ID');
 
-    if (!result) {
-      return next(new NotFound('Role not found!'));
-    }
+    const result: Role = await this.roleService.getById(roleId);
 
     return successApiResponse(res, 200, result, 'Role retrieved succesfully!');
-  }
+  };
 
-  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name } = req.body;
+  create = async (req: Request, res: Response): Promise<void> => {
+    const { name = '' } = req.body;
 
-    if (!name) {
-      return next(new Error('Role name is required.'));
-    }
+    if (!name.trim()) throw new BadRequest('Role name is required.');
 
     const result = await this.roleService.create(name);
 
     return successApiResponse(res, 201, result, 'Role created successfully!');
-  }
+  };
 
-  async updateById(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const { name } = req.body;
-    const id = req.params.id;
+  updateById = async (req: Request, res: Response): Promise<void> => {
+    const { name = '' } = req.body;
+    const roleId = Number(req.params.id);
 
-    if (!id || !name) {
-      return next(new Error('Role id and name are required.'));
-    }
+    if (isNaN(roleId)) throw new BadRequest('Invalid ID.');
 
-    try {
-      const result = await this.roleService.updateById(id, name);
-      return successApiResponse(res, 200, result, 'Role updated succesfully!');
-    } catch (err: any) {
-      if (err.code === 'P2025') {
-        return next(new NotFound('Role not found!'));
-      }
+    if (!name.trim()) throw new BadRequest('Role name is required.');
 
-      throw next(err);
-    }
-  }
+    const result = await this.roleService.updateById(roleId, name);
+    return successApiResponse(res, 200, result, 'Role updated succesfully!');
+  };
 
-  async deleteById(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const roleId = req.params.id;
+  deleteById = async (req: Request, res: Response): Promise<void> => {
+    const roleId = Number(req.params.id);
 
-    try {
-      const result = await this.roleService.deleteById(roleId);
-      return successApiResponse(res, 200, result, 'Role deleted succesfully!');
-    } catch (err: any) {
-      if (err.code === 'P2025') {
-        return next(new NotFound('Role not found!'));
-      }
+    if (isNaN(roleId)) throw new BadRequest('Invalid ID.');
 
-      throw next(err);
-    }
-  }
+    const result = await this.roleService.deleteById(roleId);
+    return successApiResponse(res, 200, result, 'Role deleted succesfully!');
+  };
 }
