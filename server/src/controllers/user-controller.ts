@@ -1,7 +1,8 @@
-import { Response, Request, NextFunction } from 'express';
+import { Response, Request } from 'express';
 import { UserService } from '../services/user-service';
 import { successApiResponse } from '../utils/api-response';
-import { NotFound } from '../errors/not-found';
+import { BadRequest } from '../errors/bad-request';
+import { UserDto } from '../types/user';
 
 export class UserController {
   private userService: UserService;
@@ -10,16 +11,8 @@ export class UserController {
     this.userService = userService;
   }
 
-  async getAll(
-    _req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  getAll = async (_req: Request, res: Response): Promise<void> => {
     const results = await this.userService.getAll();
-
-    if (results.length === 0) {
-      return next(new NotFound('No user found!'));
-    }
 
     return successApiResponse(
       res,
@@ -27,61 +20,49 @@ export class UserController {
       results,
       'Users retrieved successfully!',
     );
-  }
+  };
 
-  async getById(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const userId: string = req.params.id;
+  getById = async (req: Request, res: Response): Promise<void> => {
+    const userId = Number(req.params.id);
+
+    if (isNaN(userId)) throw new BadRequest('Invalid ID');
 
     const result = await this.userService.getById(userId);
 
-    if (!result) {
-      return next(new NotFound('User not found!'));
-    }
-
     return successApiResponse(res, 200, result, 'User fetched successfully!');
-  }
+  };
 
-  async updateUserRole(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const userId: string = req.params.id;
-    const { roleId } = req.body;
+  create = async (req: Request, res: Response): Promise<void> => {
+    const userData: UserDto = req.body;
 
-    try {
-      const result = await this.userService.updateUserRole(userId, roleId);
-      return successApiResponse(
-        res,
-        200,
-        result,
-        'User role updated successfully!',
-      );
-    } catch (err: any) {
-      if (err.code === 'P2025') {
-        return next(new NotFound('User not found!'));
-      }
+    if (!userData.roleId) throw new BadRequest('Role Id was not provided.');
 
-      throw next(err);
-    }
-  }
+    const result = await this.userService.create(userData);
 
-  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const userId: string = req.params.id;
+    return successApiResponse(res, 201, result, 'User created succesfully!');
+  };
 
-    try {
-      const result = await this.userService.deleteById(userId);
-      return successApiResponse(res, 200, result, 'User deleted successfully!');
-    } catch (err: any) {
-      if (err.code === 'P2025') {
-        return next(new NotFound('User not found!'));
-      }
+  updateUserRole = async (req: Request, res: Response): Promise<void> => {
+    const userId = Number(req.params.id);
+    const { roleId = NaN } = req.body;
 
-      throw next(err);
-    }
-  }
+    if (isNaN(roleId) || isNaN(userId)) throw new BadRequest('Invalid ID.');
+
+    const result = await this.userService.updateUserRole(userId, roleId);
+    return successApiResponse(
+      res,
+      200,
+      result,
+      'User role updated successfully!',
+    );
+  };
+
+  deleteById = async (req: Request, res: Response): Promise<void> => {
+    const userId = Number(req.params.id);
+
+    if (isNaN(userId)) throw new BadRequest('Invalid ID.');
+
+    const result = await this.userService.deleteById(userId);
+    return successApiResponse(res, 200, result, 'User deleted successfully!');
+  };
 }

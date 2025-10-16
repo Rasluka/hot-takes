@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { TakeService } from '../services/take-service';
 import { successApiResponse } from '../utils/api-response';
 import { BadRequest } from '../errors/bad-request';
-import { AuthenticatedRequest } from '../models/auth-request';
+import { AuthenticatedRequest } from '../types/auth-request';
+import { Take } from '../types/take';
 
 export class TakeController {
   private takeService: TakeService;
@@ -12,7 +13,7 @@ export class TakeController {
   }
 
   getAll = async (_req: Request, res: Response): Promise<void> => {
-    const results = await this.takeService.getAll();
+    const results: Take[] = await this.takeService.getAll();
 
     return successApiResponse(
       res,
@@ -25,9 +26,7 @@ export class TakeController {
   getById = async (req: Request, res: Response): Promise<void> => {
     const takeId = Number(req.params.id);
 
-    if (isNaN(takeId)) {
-      throw new BadRequest('Invalid ID');
-    }
+    if (isNaN(takeId)) throw new BadRequest('Invalid ID');
 
     const result = await this.takeService.getById(takeId);
 
@@ -35,16 +34,12 @@ export class TakeController {
   };
 
   create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const { content } = req.body;
+    const { content = '' } = req.body;
     const { user } = req;
 
-    if (!content) {
-      throw new BadRequest('Take content was not provided');
-    }
+    if (!content.trim()) throw new BadRequest('Take content was not provided');
 
-    if (!user?.userId) {
-      throw new BadRequest('User id was not provided');
-    }
+    if (!user?.userId) throw new BadRequest('User id was not provided');
 
     const result = await this.takeService.create(content, user.userId);
 
@@ -53,11 +48,11 @@ export class TakeController {
 
   updateById = async (req: Request, res: Response): Promise<void> => {
     const takeId = Number(req.params.id);
-    const { content } = req.body;
+    const { content = '' } = req.body;
 
-    if (isNaN(takeId)) {
-      throw new BadRequest('Invalid ID');
-    }
+    if (isNaN(takeId)) throw new BadRequest('Invalid ID.');
+
+    if (!content.trim()) throw new BadRequest('Take content was not provided.');
 
     const result = await this.takeService.updateById(takeId, content);
 

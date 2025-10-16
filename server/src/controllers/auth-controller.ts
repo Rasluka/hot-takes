@@ -1,8 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from '../services/auth-service';
 import { successApiResponse } from '../utils/api-response';
-import { AuthenticatedRequest } from '../models/auth-request';
+import { AuthenticatedRequest } from '../types/auth-request';
 import { BadRequest } from '../errors/bad-request';
+import { UserDto, UserSignInDto } from '../types/user';
+import { UnauthorizedError } from '../errors/unauthorized-error';
 
 export class AuthController {
   private authService: AuthService;
@@ -11,33 +13,26 @@ export class AuthController {
     this.authService = authService;
   }
 
-  async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { nickname, email } = req.body;
+  signUp = async (req: Request, res: Response): Promise<void> => {
+    const userData: UserDto = req.body;
 
-    if (!email || !nickname) {
-      return next(new Error('Email and nickname are required.'));
+    if (!userData.email || !userData.nickname) {
+      throw new BadRequest('Email and nickname are required.');
     }
 
-    const lowerNickname = nickname.toLowerCase();
-
-    const results = await this.authService.signUp(lowerNickname, email);
+    const results = await this.authService.signUp(userData);
 
     return successApiResponse(res, 201, results, 'User created succesfully!');
-  }
+  };
 
-  async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { nickname, code } = req.body;
+  signIn = async (req: Request, res: Response): Promise<void> => {
+    const userData: UserSignInDto = req.body;
 
-    if (!nickname || !code || code.length < 8) {
-      return next(new BadRequest('Invalid credentials.'));
+    if (!userData.nickname || !userData.code || userData.code.length != 8) {
+      throw new BadRequest('Invalid credentials.');
     }
 
-    const normalizedNickname = nickname.toLowerCase();
-
-    const { user, token } = await this.authService.signIn(
-      normalizedNickname,
-      code,
-    );
+    const { user, token } = await this.authService.signIn(userData);
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -48,27 +43,29 @@ export class AuthController {
     });
 
     return successApiResponse(res, 200, { user }, 'Signed in successfully');
-  }
+  };
 
-  async getCurrentUser(
+  getCurrentUser = async (
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     const { user } = req;
 
-    if (!user) {
-      return next(new BadRequest('Token is missing!'));
-    }
+    if (!user) throw new UnauthorizedError('Authentication required');
 
     const result = await this.authService.getCurrentUser(user.userId);
 
     return successApiResponse(res, 200, result, 'User found!');
-  }
+  };
 
-  async logout(_req: AuthenticatedRequest, res: Response, _next: NextFunction) {
-    res.clearCookie('token');
+  logout = async (_req: AuthenticatedRequest, res: Response) => {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
 
     return successApiResponse(res, 200, null, 'Logged out successfully!');
-  }
+  };
 }

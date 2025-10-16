@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AuthenticatedRequest, TokenPayload } from '../models/auth-request';
+import { AuthenticatedRequest, TokenPayload } from '../types/auth-request';
 
 export function authenticateToken(
   req: AuthenticatedRequest,
