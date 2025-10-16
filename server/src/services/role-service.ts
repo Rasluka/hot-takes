@@ -29,7 +29,7 @@ export class RoleService {
 
   async updateById(id: number, name: string): Promise<Role> {
     try {
-      return this.prisma.userRole.update({
+      return await this.prisma.userRole.update({
         where: { id },
         data: { name },
       });
@@ -41,7 +41,7 @@ export class RoleService {
 
   async deleteById(id: number): Promise<Role> {
     try {
-      return this.prisma.userRole.delete({ where: { id } });
+      return await this.prisma.userRole.delete({ where: { id } });
     } catch (err: any) {
       if (err.code === 'P2025') throw new NotFoundError('Role not found!');
       throw err;
