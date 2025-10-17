@@ -1,0 +1,50 @@
+name: Express CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: server
+        run: npm install
+
+      - name: Push Prisma schema to test DB
+        working-directory: server
+        run: npx prisma db push --schema=./prisma/schema.prisma --skip-generate
+
+      - name: Run Unit Tests
+        working-directory: server
+        run: npm run test:unit
+
+      - name: Run Integration Tests
+        working-directory: server
+        run: npm run test:integration

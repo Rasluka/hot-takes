@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "start": "ts-node src/app.ts",
-    "dev": "nodemon --ext ts --exec ts-node src/app.ts"
+    "dev": "nodemon --ext ts --exec ts-node src/app.ts",
+    "db:push:test": "dotenv -e .env.test -- npx prisma db push"
   },
   "keywords": [],
   "author": "",
@@ -20,9 +23,11 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/nodemailer": "^7.0.2",
     "@types/pg": "^8.11.11",
+    "@types/supertest": "^6.0.3",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-prettier": "^5.2.3",
@@ -30,9 +35,11 @@
     "nodemon": "^3.1.9",
     "prettier": "^3.5.2",
     "prisma": "^6.16.3",
+    "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.24.0"
+    "typescript-eslint": "^8.24.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
