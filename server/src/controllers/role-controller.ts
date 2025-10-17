@@ -25,7 +25,7 @@ export class RoleController {
   getById = async (req: Request, res: Response): Promise<void> => {
     const roleId = Number(req.params.id);
 
-    if (isNaN(roleId)) throw new BadRequest('Invalid ID');
+    if (isNaN(roleId)) throw new BadRequest('Invalid ID.');
 
     const result: Role = await this.roleService.getById(roleId);
 
