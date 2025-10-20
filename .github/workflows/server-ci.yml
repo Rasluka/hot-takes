@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      DB_URL: postgresql://postgres:postgres@localhost:5432/myapp_test?schema=public
+      DB_URL: postgresql://testuser:testpass@postgres:5432/testdb?schema=public
     services:
       postgres:
         image: postgres:15
