@@ -26,7 +26,17 @@ jobs:
           --health-retries 10
 
     env:
+      # --- Test Database ---
       DB_URL: postgresql://testuser:testpass@localhost:5432/testdb?schema=public
+
+      # --- App Environment ---
+      SERVER_PORT: 8000
+      CLIENT_APP_URL_HOST: http://localhost:3000
+      NODE_ENV: test
+
+      # --- JWT (Test values only) ---
+      JWT_SECRET: test_secret
+      JWT_EXPIRATION: 5h
 
     steps:
       - name: Checkout code
