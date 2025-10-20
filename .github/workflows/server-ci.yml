@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_URL: postgresql://testuser:testpass@postgres:5432/testdb?schema=public
+
     services:
       postgres:
         image: postgres:15
@@ -38,6 +39,13 @@ jobs:
       - name: Install dependencies
         working-directory: server
         run: npm install
+
+      - name: Wait for PostgreSQL
+        uses: jakejarvis/wait-action@v0.1.0
+        with:
+          host: postgres
+          port: 5432
+          timeout: 60
 
       - name: Push Prisma schema to test DB
         working-directory: server
