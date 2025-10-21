@@ -36,22 +36,4 @@ app.get('/', (_, res) => {
 
 app.use(errorHandler);
 
-const PORT = process.env.SERVER_PORT;
-
-async function startServer() {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-
-    app.listen(PORT, () => {
-      console.log(`Server is running at http://localhost:${PORT}`);
-      console.log('Connected to the DB!!');
-    });
-  } catch (error) {
-    console.error('Database connection failed!', error);
-    process.exit(1);
-  }
-}
-
-startServer();
-
 export default app;
