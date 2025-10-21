@@ -10,7 +10,7 @@ datasource db {
 
 model UserRole {
   id    Int    @id @default(autoincrement())
-  name  String @db.VarChar
+  name  String @unique
   users User[]
 
   @@map("user_roles")
