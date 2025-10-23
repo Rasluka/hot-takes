@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../errors/not-found.error';
 import { Take } from '../types/take';
 
 export class TakeService {

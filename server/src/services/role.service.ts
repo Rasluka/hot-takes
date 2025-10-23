@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Role } from '../types/role';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../errors/not-found.error';
 
 export class RoleService {
   constructor(private readonly prisma: PrismaClient) {}

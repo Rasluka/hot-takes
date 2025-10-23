@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { TakeService } from '../services/take-service';
-import { successApiResponse } from '../utils/api-response';
-import { BadRequest } from '../errors/bad-request';
+import { TakeService } from '../services/take.service';
+import { successApiResponse } from '../utils/api-response.util';
+import { BadRequest } from '../errors/bad-request.error';
 import { AuthenticatedRequest } from '../types/auth-request';
 import { Take } from '../types/take';
 

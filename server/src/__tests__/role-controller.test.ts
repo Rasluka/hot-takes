@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Role } from '../types/role';
-import { generateJwtToken } from '../utils/generate-token';
+import { generateJwtToken } from '../utils/generate-token.util';
 
 const authCookie = `token=${generateJwtToken(1, 'Admin')}`;
 const roleApiRoute = '/api/v1/roles';
@@ -27,7 +27,7 @@ const {
   };
 });
 
-vi.mock('../services/role-service', () => ({
+vi.mock('../services/role.service', () => ({
   RoleService: vi.fn().mockImplementation(() => ({
     getAll: mockGetAll,
     getById: mockGetById,
@@ -38,7 +38,7 @@ vi.mock('../services/role-service', () => ({
 }));
 
 import app from '../app';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../errors/not-found.error';
 
 describe('RoleController', () => {
   beforeEach(() => {

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { RoleService } from '../services/role-service';
-import { successApiResponse } from '../utils/api-response';
+import { RoleService } from '../services/role.service';
+import { successApiResponse } from '../utils/api-response.util';
 import { Role } from '../types/role';
-import { BadRequest } from '../errors/bad-request';
+import { BadRequest } from '../errors/bad-request.error';
 
 export class RoleController {
   private roleService: RoleService;
