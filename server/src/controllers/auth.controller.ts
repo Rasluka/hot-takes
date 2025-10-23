@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { AuthService } from '../services/auth-service';
-import { successApiResponse } from '../utils/api-response';
+import { AuthService } from '../services/auth.service';
+import { successApiResponse } from '../utils/api-response.util';
 import { AuthenticatedRequest } from '../types/auth-request';
-import { BadRequest } from '../errors/bad-request';
+import { BadRequest } from '../errors/bad-request.error';
 import { UserDto, UserSignInDto } from '../types/user';
-import { UnauthorizedError } from '../errors/unauthorized-error';
+import { UnauthorizedError } from '../errors/unauthorized.error';
 
 export class AuthController {
   private authService: AuthService;
@@ -28,7 +28,7 @@ export class AuthController {
   signIn = async (req: Request, res: Response): Promise<void> => {
     const userData: UserSignInDto = req.body;
 
-    if (!userData.nickname || !userData.code || userData.code.length != 8) {
+    if (!userData.nickname || !userData.code || userData.code.length !== 8) {
       throw new BadRequest('Invalid credentials.');
     }
 
@@ -58,7 +58,7 @@ export class AuthController {
     return successApiResponse(res, 200, result, 'User found!');
   };
 
-  logout = async (_req: AuthenticatedRequest, res: Response) => {
+  logout = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

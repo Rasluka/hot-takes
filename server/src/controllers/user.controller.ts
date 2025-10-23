@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
-import { UserService } from '../services/user-service';
-import { successApiResponse } from '../utils/api-response';
-import { BadRequest } from '../errors/bad-request';
+import { UserService } from '../services/user.service';
+import { successApiResponse } from '../utils/api-response.util';
+import { BadRequest } from '../errors/bad-request.error';
 import { UserDto } from '../types/user';
 
 export class UserController {

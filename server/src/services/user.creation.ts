@@ -1,8 +1,8 @@
-import { generateCode } from '../utils/generate-code';
+import { generateCode } from '../utils/generate-code.util';
 import { PrismaClient } from '@prisma/client';
 import { UserDto, UserCreationResult } from '../types/user';
-import { ConflictError } from '../errors/conflict-error';
-import { formatUser } from '../utils/format-user';
+import { ConflictError } from '../errors/conflict.error';
+import { formatUser } from '../utils/format-user.util';
 
 export async function createUserInDb(
   prisma: PrismaClient,

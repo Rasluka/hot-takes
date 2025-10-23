@@ -2,37 +2,40 @@
 
 ```
 my-express-api/
-├── src/
-│   ├── controllers/          # Controllers handle the request/response logic
-│   │   ├── userController.ts
-│   │   └── authController.ts
-│   ├── services/              # Business logic and data manipulation
-│   │   ├── userService.ts
-│   │   └── authService.ts
-│   ├── models/                # Data models and interfaces
-│   │   ├── userModel.ts
-│   │   └── authModel.ts
-│   ├── routes/                # Route definitions
-│   │   ├── userRoutes.ts
-│   │   └── authRoutes.ts
-│   ├── middleware/            # Custom middleware
-│   │   ├── authMiddleware.ts
-│   │   └── errorHandler.ts
-│   ├── config/                # Configuration files (e.g., database, environment variables)
-│   │   ├── db.ts
-│   │   └── env.ts
-│   ├── utils/                 # Utility functions and helpers
-│   │   ├── logger.ts
-│   │   └── apiResponse.ts
-│   ├── app.ts                 # Express app setup
-│   └── server.ts              # Server entry point
-├── tests/                     # Test files
-│   ├── unit/
-│   └── integration/
-├── .env                       # Environment variables
-├── .gitignore                 # Git ignore file
-├── tsconfig.json              # TypeScript configuration
-├── package.json               # NPM dependencies and scripts
-└── README.md                  # Project documentation
+src/
+├── controllers/
+│   ├── user.controller.ts
+│   ├── auth.controller.ts
+│   └── post.controller.ts
 
+├── services/
+│   ├── user.service.ts
+│   ├── auth.service.ts
+│   └── post.service.ts
+
+├── models/
+│   ├── user.model.ts
+│   ├── post.model.ts
+│   └── role.model.ts
+
+├── routes/
+│   ├── user.routes.ts
+│   ├── auth.routes.ts
+│   └── post.routes.ts
+
+├── middleware/
+│   ├── auth.middleware.ts
+│   ├── error.middleware.ts
+│   └── validate.middleware.ts
+
+├── config/
+│   ├── db.config.ts
+│   └── env.config.ts
+
+├── utils/
+│   ├── prisma.util.ts
+│   ├── logger.util.ts
+│   └── response.util.ts
+
+└── app.ts
 ```

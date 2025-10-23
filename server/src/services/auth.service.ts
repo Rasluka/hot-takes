@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { createUserInDb } from './user-creation';
+import { createUserInDb } from './user.creation';
 import {
   User,
   UserCreationResult,
@@ -8,17 +7,15 @@ import {
   UserSignInDto,
   UserSignInResult,
 } from '../types/user';
-import { sendCodeEmail } from './email-service';
+import { sendCodeEmail } from './email.service';
 import { PrismaClient } from '@prisma/client';
-import { UnauthorizedError } from '../errors/unauthorized-error';
-import { NotFoundError } from '../errors/not-found-error';
-import { formatUser } from '../utils/format-user';
+import { UnauthorizedError } from '../errors/unauthorized.error';
+import { NotFoundError } from '../errors/not-found.error';
+import { formatUser } from '../utils/format-user.util';
+import { generateJwtToken } from '../utils/generate-token.util';
 
 export class AuthService {
-  constructor(
-    private readonly jwtSecret: string,
-    private readonly prisma: PrismaClient,
-  ) {}
+  constructor(private readonly prisma: PrismaClient) {}
 
   async signUp(userData: UserDto): Promise<UserCreationResult> {
     const signUpRes: UserCreationResult = await createUserInDb(this.prisma, {
@@ -29,7 +26,7 @@ export class AuthService {
 
     try {
       await sendCodeEmail(userData.email, userData.nickname, signUpRes.code);
-    } catch (err) {
+    } catch {
       emailSent = false;
     }
 
@@ -51,13 +48,7 @@ export class AuthService {
 
     if (!isValidCode) throw new UnauthorizedError('Invalid credentials.');
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role.name },
-      this.jwtSecret,
-      {
-        expiresIn: process.env.JWT_EXPIRATION || '5h',
-      } as jwt.SignOptions,
-    );
+    const token = generateJwtToken(user.id, user.role.name);
 
     return { user: formatUser(user), token };
   }

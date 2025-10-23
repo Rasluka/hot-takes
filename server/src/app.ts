@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
-import { errorHandler } from './middleware/error-handler';
-import { createAuthRouter } from './routes/auth-route';
-import { createUserRouter } from './routes/user-route';
-import { createRoleRouter } from './routes/role-route';
-import { createTakeRouter } from './routes/take-route';
+import { errorHandler } from './middleware/error-handler.middleware';
+import { createAuthRouter } from './routes/auth.route';
+import { createUserRouter } from './routes/user.route';
+import { createRoleRouter } from './routes/role.route';
+import { createTakeRouter } from './routes/take.route';
 import prisma from './prisma';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';

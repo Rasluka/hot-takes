@@ -1,9 +1,9 @@
-import { createUserInDb } from './user-creation';
-import { sendCodeEmail } from './email-service';
+import { createUserInDb } from './user.creation';
+import { sendCodeEmail } from './email.service';
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../errors/not-found.error';
 import { User, UserDto, UserCreationResult } from '../types/user';
-import { formatUser } from '../utils/format-user';
+import { formatUser } from '../utils/format-user.util';
 
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
