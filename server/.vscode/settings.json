@@ -25,5 +25,8 @@
     "titleBar.inactiveBackground": "#ff000099",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
