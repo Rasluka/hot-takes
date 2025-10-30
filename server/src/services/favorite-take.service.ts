@@ -28,10 +28,7 @@ export class FavoriteTakeService {
       }
 
       if (err?.code === 'P2002') {
-        const testing = await this.prisma.favoriteTake.findMany();
-        throw new ConflictError(
-          `This takeId ${takeId} is already in your favorites ${userId} ==> ${JSON.stringify(testing)}`,
-        );
+        throw new ConflictError('This take is already in your favorites.');
       }
 
       throw err;
