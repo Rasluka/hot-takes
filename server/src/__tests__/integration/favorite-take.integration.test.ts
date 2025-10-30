@@ -29,6 +29,8 @@ afterAll(async () => {
 
 describe('FavoriteTake API Integration', () => {
   describe('POST /favorites/takes', () => {
+    // THIS TEST SHOULD BE DISABLE BECAUSE ITS BREAKING THE CI
+    // NEED TO DO FURTHER RESEARCH ON CI
     it('returns new favorite when created', async () => {
       const res = await request(app)
         .post(favTakeApiRoute)
