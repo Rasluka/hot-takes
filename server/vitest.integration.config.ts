@@ -8,6 +8,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     sequence: { concurrent: false },
+    poolOptions: {
+      threads: { singleThread: true },
+    },
     include: ['src/**/__tests__/integration/**/*.test.ts'],
     fileParallelism: false,
   },
