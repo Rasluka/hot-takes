@@ -30,6 +30,9 @@ afterAll(async () => {
 describe('FavoriteTake API Integration', () => {
   describe('POST /favorites/takes', () => {
     it('returns new favorite when created', async () => {
+      const allFavorites = await prisma.favoriteTake.findMany();
+      console.log('Existing favorites:', allFavorites);
+
       const tempAuthCookie = `token=${generateJwtToken(2, 'Admin')}`;
       const res = await request(app)
         .post(favTakeApiRoute)

@@ -59,14 +59,17 @@ jobs:
           done
           echo "Postgres is ready!"
 
-      - name: Push Prisma schema to test DB
+      #  Drop and recreate DB schema to ensure it's clean
+      - name: Reset Prisma schema (fresh DB)
         working-directory: server
-        run: npx prisma db push --schema=./prisma/schema.prisma --skip-generate
+        run: npx prisma migrate reset --force --skip-seed --skip-generate
 
+      #  Run unit tests (pure logic, independent of DB)
       - name: Run Unit Tests
         working-directory: server
         run: npm run test:unit
 
+      #  Run integration tests (with clean DB)
       - name: Run Integration Tests
         working-directory: server
         run: npm run test:integration
