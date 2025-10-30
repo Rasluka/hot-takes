@@ -31,16 +31,19 @@ describe('FavoriteTake API Integration', () => {
   describe('POST /favorites/takes', () => {
     it('returns new favorite when created', async () => {
       const allFavorites = await prisma.favoriteTake.findMany();
-      console.log('Existing favorites:', allFavorites);
+      console.log('Existing favorites before:', allFavorites);
 
       const tempAuthCookie = `token=${generateJwtToken(2, 'Admin')}`;
       const res = await request(app)
         .post(favTakeApiRoute)
-        .send({ takeId: 2 })
+        .send({ takeId: 1 })
         .set('Cookie', tempAuthCookie);
 
+      const allFavoritesAfter = await prisma.favoriteTake.findMany();
+      console.log('Existing favorites after:', allFavoritesAfter);
+
       expect(res.status).toBe(201);
-      expect(res.body.data.takeId).toBe(2);
+      expect(res.body.data.takeId).toBe(1);
     });
 
     it('throws 400 error if no valid takeId is provided', async () => {
