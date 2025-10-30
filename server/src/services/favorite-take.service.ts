@@ -27,6 +27,10 @@ export class FavoriteTakeService {
         throw new ConflictError('User or take ID does not exist.');
       }
 
+      if (err?.code === 'P2002') {
+        throw new ConflictError('This take is already in your favorites.');
+      }
+
       throw err;
     }
   }

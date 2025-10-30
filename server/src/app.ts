@@ -5,6 +5,7 @@ import { createAuthRouter } from './routes/auth.route';
 import { createUserRouter } from './routes/user.route';
 import { createRoleRouter } from './routes/role.route';
 import { createTakeRouter } from './routes/take.route';
+import { createFavoriteTakeRouter } from './routes/favorite-take.route';
 import prisma from './prisma';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -27,6 +28,7 @@ app.use(`${API_VERSION}/auth`, createAuthRouter(prisma));
 app.use(`${API_VERSION}/users`, createUserRouter(prisma));
 app.use(`${API_VERSION}/roles`, createRoleRouter(prisma));
 app.use(`${API_VERSION}/takes`, createTakeRouter(prisma));
+app.use(`${API_VERSION}/favorites/takes`, createFavoriteTakeRouter(prisma));
 
 app.get('/', (_, res) => {
   res.json({

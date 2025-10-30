@@ -3,15 +3,17 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import app from '../../app';
 import prisma from '../../prisma';
 import { generateJwtToken } from '../../utils/generate-token.util';
+import { clearTestDb } from '../setup/seedHelpers';
 
 const authCookie = `token=${generateJwtToken(1, 'Admin')}`;
 const roleApiRoute = '/api/v1/roles';
 
 beforeEach(async () => {
-  await prisma.userRole.deleteMany();
+  await clearTestDb();
 });
 
 afterAll(async () => {
+  await clearTestDb();
   await prisma.$disconnect();
 });
 

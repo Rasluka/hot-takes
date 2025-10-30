@@ -7,6 +7,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/__tests__/integration/**/*.integration.test.ts'],
+    sequence: { concurrent: false },
+    include: ['src/**/__tests__/integration/**/*.test.ts'],
+    // 👇 this replaces the old --threads flag
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
+    fileParallelism: false,
   },
 });

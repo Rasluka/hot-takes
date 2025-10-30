@@ -27,7 +27,7 @@ const {
   };
 });
 
-vi.mock('../services/role.service', () => ({
+vi.mock('../../services/role.service.ts', () => ({
   RoleService: vi.fn().mockImplementation(() => ({
     getAll: mockGetAll,
     getById: mockGetById,
