@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: server
-        run: npm install
+        run: npm ci
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -59,17 +59,17 @@ jobs:
           done
           echo "Postgres is ready!"
 
-      #  Drop and recreate DB schema to ensure it's clean
-      - name: Reset Prisma schema (fresh DB)
-        working-directory: server
-        run: npx prisma migrate reset --force --skip-seed --skip-generate
-
-      #  Run unit tests (pure logic, independent of DB)
+      # Run unit tests first — no need for DB yet
       - name: Run Unit Tests
         working-directory: server
         run: npm run test:unit
 
-      #  Run integration tests (with clean DB)
+      # Ensure test DB is fully reset before integration tests
+      - name: Reset test database (clean schema)
+        working-directory: server
+        run: npx prisma migrate reset --force --skip-seed --skip-generate --schema=./prisma/schema.prisma
+
+      # Run integration tests (fresh DB)
       - name: Run Integration Tests
         working-directory: server
         run: npm run test:integration
