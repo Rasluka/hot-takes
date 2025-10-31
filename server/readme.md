@@ -1,7 +1,7 @@
 # Project Structure
 
 ```
-my-express-api/
+project/
 src/
 ├── controllers/
 │   ├── user.controller.ts
@@ -39,3 +39,15 @@ src/
 
 └── app.ts
 ```
+
+# Naming convention
+
+Where:
+
+```
+[feature].[layer].ts
+```
+
+[feature] → the domain or entity (e.g., role, favorite-take)
+
+[layer] → type of file (e.g., service, controller, repository)

@@ -1,8 +1,8 @@
 import { User } from '../types/user';
-import { User as PrismaUser } from '../generated/prisma';
+import { User as PrismaUserModel } from '@prisma/client';
 
 export function formatUser(
-  user: PrismaUser & { role: { id: number; name: string } },
+  user: PrismaUserModel & { role: { id: number; name: string } },
 ): User {
   return {
     id: user.id,

@@ -7,7 +7,8 @@ export default defineConfig({
   test: {
     globals: true, // allows describe/it/expect without importing
     environment: 'node', // for backend testing
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/__tests__/**/*.test.ts'],
+    exclude: ['**/*.integration.test.ts'],
     coverage: {
       reporter: ['text', 'html'],
     },

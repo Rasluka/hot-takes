@@ -8,7 +8,7 @@ export async function createUserInDb(
   prisma: PrismaClient,
   userData: UserDto,
 ): Promise<UserCreationResult> {
-  const normalizedData = normalizeUserDto(userData);
+  const normalizedData: UserDto = normalizeUserDto(userData);
   const { newCode, hashedCode } = await generateCode();
 
   try {
@@ -16,6 +16,7 @@ export async function createUserInDb(
       data: {
         ...normalizedData,
         hashedCode: hashedCode,
+        roleId: normalizedData.roleId || 2,
       },
       include: {
         role: true,

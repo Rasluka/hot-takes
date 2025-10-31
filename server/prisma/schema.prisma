@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -17,14 +17,15 @@ model UserRole {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  nickname    String    @unique @db.VarChar(50)
-  email       String    @unique @db.VarChar(150)
-  hashedCode  String    @db.VarChar
-  roleId      Int
-  role        UserRole  @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_id_fk")
+  id         Int      @id @default(autoincrement())
+  nickname   String   @unique @db.VarChar(50)
+  email      String   @unique @db.VarChar(150)
+  hashedCode String   @db.VarChar
+  roleId     Int
+  role       UserRole @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_id_fk")
 
-  takes       Take[]
+  takes         Take[]
+  favoriteTakes FavoriteTake[]
 
   @@map("users")
 }
@@ -34,9 +35,24 @@ model Take {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   createdBy Int
-  user      User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  user        User           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  favoritedBy FavoriteTake[]
 
   @@map("takes")
+}
+
+model FavoriteTake {
+  id     Int @id @default(autoincrement())
+  userId Int
+  takeId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  take Take @relation(fields: [takeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, takeId]) //Prevent duplicate pair
+  @@index([userId])
+  @@index([takeId])
+  @@map("favorite_takes")
 }

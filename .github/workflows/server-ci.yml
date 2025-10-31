@@ -26,15 +26,10 @@ jobs:
           --health-retries 10
 
     env:
-      # --- Test Database ---
       DB_URL: postgresql://testuser:testpass@localhost:5432/testdb?schema=public
-
-      # --- App Environment ---
       SERVER_PORT: 8000
       CLIENT_APP_URL_HOST: http://localhost:3000
       NODE_ENV: test
-
-      # --- JWT (Test values only) ---
       JWT_SECRET: test_secret
       JWT_EXPIRATION: 5h
 
@@ -49,7 +44,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: server
-        run: npm install
+        run: npm ci
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -59,14 +54,20 @@ jobs:
           done
           echo "Postgres is ready!"
 
-      - name: Push Prisma schema to test DB
-        working-directory: server
-        run: npx prisma db push --schema=./prisma/schema.prisma --skip-generate
-
       - name: Run Unit Tests
         working-directory: server
         run: npm run test:unit
 
+      - name: Setup test database
+        working-directory: server
+        run: |
+          # Completely reset the database
+          npx prisma db push --force-reset --schema=./prisma/schema.prisma
+          npx prisma generate --schema=./prisma/schema.prisma
+
       - name: Run Integration Tests
         working-directory: server
         run: npm run test:integration
+        env:
+          # Add CI-specific flag for debugging
+          CI_DEBUG: true

@@ -48,6 +48,10 @@ export class AuthService {
 
     if (!isValidCode) throw new UnauthorizedError('Invalid credentials.');
 
+    if (user.role.name !== 'User' && user.role.name !== 'Admin') {
+      throw new UnauthorizedError('Invalid user role.');
+    }
+
     const token = generateJwtToken(user.id, user.role.name);
 
     return { user: formatUser(user), token };

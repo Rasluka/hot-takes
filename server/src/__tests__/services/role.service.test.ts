@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { RoleService } from '../services/role.service';
-import { NotFoundError } from '../errors/not-found.error';
-import { Role } from '../types/role';
+import { RoleService } from '../../services/role.service';
+import { NotFoundError } from '../../errors/not-found.error';
+import { Role } from '../../types/role';
 
 const mockPrisma = {
   userRole: {
