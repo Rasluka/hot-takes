@@ -1,6 +1,6 @@
 import prisma from '../../prisma';
 
-export const seedRoles = async () => {
+export const seedStaticData = async (): Promise<void> => {
   await prisma.userRole.createMany({
     data: [
       { id: 1, name: 'Admin' },
@@ -8,9 +8,7 @@ export const seedRoles = async () => {
     ],
     skipDuplicates: true,
   });
-};
 
-export const seedUsers = async () => {
   await prisma.user.createMany({
     data: [
       {
@@ -30,9 +28,7 @@ export const seedUsers = async () => {
     ],
     skipDuplicates: true,
   });
-};
 
-export const seedTakes = async () => {
   await prisma.take.createMany({
     data: [
       { id: 1, content: 'Coffee is better cold.', createdBy: 1 },
@@ -42,15 +38,34 @@ export const seedTakes = async () => {
   });
 };
 
-export const seedFavoriteTakes = async () => {
+export const seedFavoriteTakes = async (): Promise<void> => {
   await prisma.favoriteTake.create({
     data: { id: 1, userId: 1, takeId: 1 },
   });
 };
 
-export const clearTestDb = async () => {
+export const clearFavoriteTakes = async (): Promise<void> => {
   await prisma.favoriteTake.deleteMany();
-  await prisma.take.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.userRole.deleteMany();
+};
+
+export const clearTestDb = async (): Promise<void> => {
+  await prisma.$transaction([
+    prisma.favoriteTake.deleteMany(),
+    prisma.take.deleteMany(),
+    prisma.user.deleteMany(),
+    prisma.userRole.deleteMany(),
+  ]);
+  await resetSequences();
+};
+
+export const resetSequences = async (): Promise<void> => {
+  const sequences = await prisma.$queryRaw<
+    { sequence_name: string }[]
+  >`SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema='public';`;
+
+  for (const seq of sequences) {
+    await prisma.$executeRawUnsafe(
+      `ALTER SEQUENCE "${seq.sequence_name}" RESTART WITH 1`,
+    );
+  }
 };
