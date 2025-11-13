@@ -10,11 +10,21 @@ import prisma from './prisma';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+const allowedOrigins = ['http://127.0.0.1:3000', 'http://localhost:3000'];
+
 const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CLIENT_APP_URL_HOST,
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS not allowed'));
+      }
+    },
     credentials: true,
   }),
 );
