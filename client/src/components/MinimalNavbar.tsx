@@ -1,0 +1,44 @@
+import { Link } from "react-router-dom";
+import { Menu } from "lucide-react";
+
+export function MinimalNavbar() {
+  return (
+    <div className="navbar bg-base-100 shadow-sm">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost">
+            <Menu />
+          </div>
+          <ul
+            tabIndex={-1}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+          >
+            <li className="">
+              <Link to="/new" className="nav-link">
+                Feed
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/explore" className="nav-link">
+                Explore
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/aboutus" className="nav-link">
+                About Us
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="navbar-center">
+        <Link to="/" className="nav-link font-bold text-xl">
+          Hot Takes
+        </Link>
+      </div>
+    </div>
+  );
+}

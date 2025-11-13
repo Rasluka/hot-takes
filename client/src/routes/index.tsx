@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import { MainLayout } from "../layouts/MainLayout";
+import { MinimalLayout } from "../layouts/MinimalLayout";
 
 export interface AppRoute {
   path: string;
@@ -18,7 +19,13 @@ export const routes: AppRoute[] = [
     layout: <MainLayout />,
     children: [{ path: "/", element: <Home /> }],
   },
+  {
+    path: "/",
+    layout: <MinimalLayout />,
+    children: [
+      { path: "/signin", element: <SignIn /> },
+      { path: "/signup", element: <SignUp /> },
+    ],
+  },
   //Standalone routes
-  { path: "/signin", element: <SignIn /> },
-  { path: "/signup", element: <SignUp /> },
 ];
