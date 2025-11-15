@@ -2,14 +2,20 @@
 @plugin "daisyui";
 
 :root {
-  --font-roboto: 'Roboto', sans-serif;
-  --font-montserrat: 'Montserrat', sans-serif;
-  --font-manrope: 'Manrope', sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-manrope: "Manrope", sans-serif;
 }
 
-.roboto { font-family: var(--font-roboto); }
-.montserrat { font-family: var(--font-montserrat); }
-.manrope { font-family: var(--font-manrope); }
+.roboto {
+  font-family: var(--font-roboto);
+}
+.montserrat {
+  font-family: var(--font-montserrat);
+}
+.manrope {
+  font-family: var(--font-manrope);
+}
 
 body {
   font-family: var(--font-montserrat);
@@ -18,15 +24,13 @@ body {
 /* Reusable nav link */
 @layer components {
   .nav-link {
-    @apply 
-      relative inline-block px-2 text-base font-medium text-gray-700
+    @apply relative inline-block px-2 text-base font-medium
       transition-colors duration-200 ease-in-out
       /* Underline animation */
       after:content-[''] after:absolute after:left-0 after:bottom-0
-      after:w-full after:h-[2px] after:bg-current after:scale-x-0
+      after:w-full after:h-0.5 after:bg-current after:scale-x-0
       after:origin-center after:transition-transform after:duration-300
-      hover:after:scale-x-100
-      hover:text-black;
+      hover:after:scale-x-100;
   }
 
   /* Add “fake bold” effect using text-shadow */

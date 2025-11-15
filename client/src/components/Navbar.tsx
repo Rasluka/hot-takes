@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useUser } from "../contexts/UserContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { Sun, Moon } from "lucide-react";
 
 export function MainNavBar() {
   const { isAuthenticated, logout } = useUser();
+  const { currentTheme, toggleTheme } = useTheme();
+
+  const onToggleTheme = () => {
+    toggleTheme();
+  };
 
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -84,6 +91,32 @@ export function MainNavBar() {
 
       {/* Nav End */}
       <div className="navbar-end">
+        <div className="flex me-8">
+          {currentTheme === "dark" ? (
+            <div
+              className="tooltip tooltip-bottom tooltip-primary"
+              data-tip="Switch to light mode "
+            >
+              <Sun
+                onClick={onToggleTheme}
+                cursor="pointer"
+                className="hover:scale-110 transition-transform duration-300 ease-in-out"
+              />
+            </div>
+          ) : (
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip="Switch to dark mode "
+            >
+              <Moon
+                onClick={onToggleTheme}
+                cursor="pointer"
+                className="hover:scale-110 transition-transform duration-300 ease-in-out"
+              />
+            </div>
+          )}
+        </div>
+
         {isAuthenticated ? (
           <div className="dropdown dropdown-end">
             <div
