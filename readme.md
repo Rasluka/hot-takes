@@ -17,18 +17,22 @@ Hot Takes is a social platform where users can share their bold opinions (or "ho
 ## Technologies Used
 
 ### Frontend
+
 - **React Vite**: Fast and modern frontend development.
 - **TailwindCSS**: Utility-first CSS framework for styling.
 - **TypeScript**: Statically typed JavaScript for better developer experience.
 
 ### Backend
+
 - **Express**: Minimal and flexible Node.js web application framework.
 - **TypeScript**: Type-safe backend development.
 
 ### Database
+
 - **PostgreSQL**: Powerful, open-source relational database system.
 
 ### Deployment
+
 - **Railway**: PostgreSQL currently deployed in Railway.
 
 ---
@@ -38,7 +42,8 @@ Hot Takes is a social platform where users can share their bold opinions (or "ho
 ### Prerequisites
 
 Before running the app, ensure you have the following installed:
-- Node.js (v23.6.0)
+
+- Node.js (v22.19.0)
 - PostgreSQL (v12 or higher)
 - npm or yarn
 
@@ -48,3 +53,4 @@ Before running the app, ensure you have the following installed:
    ```bash
    git clone https://github.com/your-username/hot-takes.git
    cd hot-takes
+   ```

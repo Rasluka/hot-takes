@@ -2,6 +2,7 @@ import AppRouter from "./routes/AppRouter";
 import type { ReactElement } from "react";
 import { Toaster } from "react-hot-toast";
 import { UserProvider, useUser } from "./contexts/UserContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import "./App.css";
 
@@ -22,9 +23,11 @@ function AppContent(): ReactElement {
 
 function App(): ReactElement {
   return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

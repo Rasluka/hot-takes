@@ -35,7 +35,7 @@ export default [
       "@typescript-eslint/typedef": [
         "error",
         {
-          variableDeclaration: true,
+          variableDeclaration: false,
           arrowParameter: true,
           memberVariableDeclaration: true,
         },
