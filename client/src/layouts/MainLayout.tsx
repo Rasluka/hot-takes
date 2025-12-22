@@ -1,12 +1,13 @@
+import type { JSX } from "react";
 import { MainNavBar } from "../components/Navbar";
 // import { MainFooter } from "../components/Footer";
 import { Outlet } from "react-router-dom";
 
-export function MainLayout() {
+export function MainLayout(): JSX.Element {
   return (
     <>
       <MainNavBar />
-      <main className="flex-grow container mx-auto p-4">
+      <main className="grow container mx-auto p-4">
         <Outlet />
       </main>
       {/* <MainFooter /> */}

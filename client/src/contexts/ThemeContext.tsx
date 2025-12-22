@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -5,21 +6,23 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
-interface IThemeContext {
+interface ThemeContextType {
   currentTheme: "light" | "dark";
   toggleTheme: () => void;
   setTheme: (theme: "light" | "dark") => void;
 }
 
-const defaultState: IThemeContext = {
+const defaultState: ThemeContextType = {
   currentTheme: "light",
   toggleTheme: () => {},
   setTheme: () => {},
 };
 
-export const ThemeContext = createContext<IThemeContext>(defaultState);
+export const ThemeContext = createContext<ThemeContextType>(defaultState);
 
-export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+export const ThemeProvider = ({
+  children,
+}: ThemeProviderProps): JSX.Element => {
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">(() => {
     const storedTheme = localStorage.getItem("theme") as
       | "light"
@@ -34,7 +37,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   });
 
   const toggleTheme = () => {
-    setCurrentTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setCurrentTheme((prev: "light" | "dark") =>
+      prev === "light" ? "dark" : "light"
+    );
   };
 
   const setTheme = (theme: "light" | "dark") => {
@@ -55,7 +60,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     document.documentElement.setAttribute("data-theme", currentTheme);
 
     return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
+  }, [currentTheme]);
 
   return (
     <ThemeContext.Provider value={{ currentTheme, toggleTheme, setTheme }}>
@@ -64,7 +69,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   );
 };
 
-export const useTheme = () => {
+export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
 
   if (!context) {

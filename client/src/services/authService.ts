@@ -1,4 +1,5 @@
 import { createAxiosInstance } from "./apiService";
+import type { UserType, UserSignUpType } from "../types/user";
 
 interface SignUpData {
   nickname: string;
@@ -10,44 +11,37 @@ interface SignInData {
   code: string;
 }
 
+interface BaseApiResponse<T = void> {
+  data: T;
+  status: number;
+  message?: string;
+}
+
 const apiClient = createAxiosInstance("auth", { withCredentials: true });
 
-export const signUp = async (data: SignUpData) => {
-  try {
-    const res = await apiClient.post("signup", data);
+export const signUp = async (data: SignUpData): Promise<UserSignUpType> => {
+  const res = await apiClient.post<BaseApiResponse<UserSignUpType>>(
+    "signup",
+    data
+  );
 
-    return res.data;
-  } catch (error) {
-    throw error;
-  }
+  return res.data.data;
 };
 
-export const login = async (data: SignInData) => {
-  try {
-    const res = await apiClient.post("signin", data);
+export const login = async (data: SignInData): Promise<UserType> => {
+  const res = await apiClient.post<BaseApiResponse<UserType>>("signin", data);
 
-    return res.data;
-  } catch (error) {
-    throw error;
-  }
+  return res.data.data;
 };
 
-export const getCurrentUser = async () => {
-  try {
-    const res = await apiClient.get("me");
+export const getCurrentUser = async (): Promise<UserType> => {
+  const res = await apiClient.get<BaseApiResponse<UserType>>("me");
 
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+  return res.data.data;
 };
 
-export const userLogout = async () => {
-  try {
-    const res = await apiClient.get("logout");
+export const userLogout = async (): Promise<BaseApiResponse<void>> => {
+  const res = await apiClient.post<BaseApiResponse<void>>("logout");
 
-    return res;
-  } catch (err) {
-    throw err;
-  }
+  return res.data;
 };

@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signUp } from "../services/authService";
@@ -5,6 +6,7 @@ import { isValidEmail } from "../utils/validators";
 import toast, { Toaster } from "react-hot-toast";
 import { CodeModal } from "../components/CodeModal";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 interface ISignUpStateForm {
   nickname: string;
@@ -16,7 +18,7 @@ interface INewUser {
   code: string;
 }
 
-export default function SignUp() {
+export default function SignUp(): JSX.Element {
   const [formData, setFormData] = useState<ISignUpStateForm>({
     nickname: "",
     email: "",
@@ -49,9 +51,7 @@ export default function SignUp() {
     }
 
     try {
-      const res = await signUp(formData);
-      const { data } = res;
-      const { code, user } = data;
+      const { user, code } = await signUp(formData);
 
       if (code && user) {
         setShowModal(true);
@@ -62,30 +62,52 @@ export default function SignUp() {
       } else {
         throw new Error("Something went wrong!!");
       }
-    } catch (err: any) {
-      const res = err.response;
-      console.error("error ===>", res);
-      const errMsg = res?.data?.message;
+    } catch (err: unknown) {
+      // Use unknown instead of any
+      // Check if it's an AxiosError
+      if (err instanceof AxiosError) {
+        const res = err.response;
+        console.error("error ===>", res);
+        const errMsg = res?.data?.message || err.message;
 
-      toast.error(errMsg, {
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
+        toast.error(errMsg, {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
 
-      if (res) {
-        const { status, data } = res;
-        const message = data.message.toLowerCase();
+        if (res) {
+          const { status, data } = res;
+          const message = (data.message || "").toLowerCase();
 
-        if (status === 409) {
-          if (message.includes("email")) {
-            setIsEmailError(true);
-          } else if (message.includes("nickname")) {
-            setIsNicknameError(true);
+          if (status === 409) {
+            if (message.includes("email")) {
+              setIsEmailError(true);
+            } else if (message.includes("nickname")) {
+              setIsNicknameError(true);
+            }
           }
         }
+      } else if (err instanceof Error) {
+        // Handle non-Axios errors
+        toast.error(err.message, {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+      } else {
+        // Handle unknown error types
+        toast.error("An unknown error occurred", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
       }
     } finally {
       setIsLoading(false);
@@ -94,7 +116,7 @@ export default function SignUp() {
 
   const onModalClose = () => {
     setShowModal(false);
-    navigate("/signin");
+    void navigate("/signin");
   };
 
   return (
@@ -137,7 +159,7 @@ export default function SignUp() {
         <button
           className="btn btn-outline btn-secondary mt-4"
           disabled={!formData.nickname || !formData.email || isLoading}
-          onClick={onSubmitClicked}
+          onClick={() => void onSubmitClicked()}
         >
           {isLoading ? (
             <span className="loading loading-ring loading-xl"></span>

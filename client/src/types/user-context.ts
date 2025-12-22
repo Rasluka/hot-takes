@@ -1,10 +1,10 @@
-import type { IUser } from "./user";
+import type { UserType } from "./user";
 
-export interface IUserContext {
-  user: IUser | null;
+export interface UserContextType {
+  user: UserType | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: IUser) => void;
-  logout: () => void;
-  updateUser: (user: IUser) => void;
+  login: (user: UserType) => void;
+  logout: () => Promise<void>;
+  updateUser: (user: UserType) => void;
 }

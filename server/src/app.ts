@@ -40,7 +40,7 @@ app.use(`${API_VERSION}/roles`, createRoleRouter(prisma));
 app.use(`${API_VERSION}/takes`, createTakeRouter(prisma));
 app.use(`${API_VERSION}/favorites/takes`, createFavoriteTakeRouter(prisma));
 
-app.get('/', (_, res) => {
+app.get(`${API_VERSION}/live`, (_, res) => {
   res.json({
     message: 'Welcome to the Hot Takes API!',
   });

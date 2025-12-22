@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { login } from "../services/authService";
@@ -5,13 +6,14 @@ import { onGlobalError } from "../utils/global-error";
 import { useUser } from "../contexts/UserContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import type { UserType } from "../types/user";
 
 interface ISignInStateForm {
   nickname: string;
   code: string;
 }
 
-export default function SignIn() {
+export default function SignIn(): JSX.Element {
   const [formData, setFormData] = useState<ISignInStateForm>({
     nickname: "",
     code: "",
@@ -34,10 +36,10 @@ export default function SignIn() {
     if (!formData.nickname || !formData.code) return null;
 
     try {
-      const { data } = await login(formData);
-      userContext.login(data.user);
+      const user: UserType = await login(formData);
+      userContext.login(user);
       toast.success("Logged in successfully!");
-      navigate("/");
+      void navigate("/");
     } catch (err) {
       console.error(err);
 
@@ -73,7 +75,7 @@ export default function SignIn() {
         <button
           className="btn btn-secondary mt-4"
           disabled={!formData.nickname || !formData.code}
-          onClick={onSubmitClicked}
+          onClick={() => void onSubmitClicked()}
         >
           Login
         </button>
