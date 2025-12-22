@@ -1,32 +1,33 @@
+import type { JSX } from "react";
 import { createContext, useState, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { IUserContext } from "../types/user-context";
-import type { IUser } from "../types/user";
+import type { UserContextType } from "../types/user-context";
+import type { UserType } from "../types/user";
 import { getCurrentUser, userLogout } from "../services/authService";
 
 interface UserProviderProps {
   children: ReactNode;
 }
 
-const defaultState: IUserContext = {
+const defaultState: UserContextType = {
   user: null,
   isAuthenticated: false,
   isLoading: false,
   login: () => {},
-  logout: () => {},
+  logout: async () => {},
   updateUser: () => {},
 };
 
-export const UserContext = createContext<IUserContext | undefined>(
+export const UserContext = createContext<UserContextType | undefined>(
   defaultState
 );
 
-export const UserProvider = ({ children }: UserProviderProps) => {
-  const [user, setUser] = useState<IUser | null>(null);
+export const UserProvider = ({ children }: UserProviderProps): JSX.Element => {
+  const [user, setUser] = useState<UserType | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const login = (newUser: IUser) => {
+  const login = (newUser: UserType) => {
     setUser(newUser);
     setIsAuthenticated(true);
   };
@@ -34,14 +35,15 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const logout = async () => {
     try {
       await userLogout();
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
     } finally {
       setUser(null);
       setIsAuthenticated(false);
     }
   };
 
-  const updateUser = (updatedUser: IUser) => {
+  const updateUser = (updatedUser: UserType) => {
     setUser(updatedUser);
   };
 
@@ -50,11 +52,10 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       try {
         setIsLoading(true);
 
-        const res = await getCurrentUser();
-        setUser(res.data);
+        const user = await getCurrentUser();
+        setUser(user);
         setIsAuthenticated(true);
-        console.log(res.data);
-      } catch (err) {
+      } catch {
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -62,7 +63,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       }
     };
 
-    fetchCurrentUser();
+    void fetchCurrentUser();
   }, []);
 
   return (
@@ -74,7 +75,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   );
 };
 
-export const useUser = () => {
+export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error("useUser must be used within a UserProvider");

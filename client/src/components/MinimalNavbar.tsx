@@ -1,9 +1,10 @@
+import type { JSX } from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 
-export function MinimalNavbar() {
+export function MinimalNavbar(): JSX.Element {
   const { currentTheme, toggleTheme } = useTheme();
 
   const onToggleTheme = () => {

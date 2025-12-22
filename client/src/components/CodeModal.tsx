@@ -1,8 +1,9 @@
+import type { JSX } from "react";
 import toast from "react-hot-toast";
 import { Copy, Check } from "lucide-react";
 import { useState, useRef, useCallback, useEffect } from "react";
 
-interface ICodeModalProps {
+interface CodeModalProps {
   nickname: string;
   code: string;
   isOpen: boolean;
@@ -14,14 +15,12 @@ export function CodeModal({
   code,
   isOpen,
   onClose,
-}: ICodeModalProps) {
-  if (!isOpen) return null;
-
+}: CodeModalProps): JSX.Element | null {
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onCodeCopy = useCallback(() => {
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     toast.success("Code copied to clipboard!");
 
     if (timeoutRef.current) {
@@ -41,6 +40,8 @@ export function CodeModal({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  if (!isOpen) return null;
 
   return (
     <dialog open className="modal">

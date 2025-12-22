@@ -1,10 +1,11 @@
+import type { JSX } from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useUser } from "../contexts/UserContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 
-export function MainNavBar() {
+export function MainNavBar(): JSX.Element {
   const { isAuthenticated, logout } = useUser();
   const { currentTheme, toggleTheme } = useTheme();
 

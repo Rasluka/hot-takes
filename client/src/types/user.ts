@@ -1,4 +1,4 @@
-export interface IUser {
+export interface UserType {
   id: number;
   nickname: string;
   email: string;
@@ -6,4 +6,10 @@ export interface IUser {
     id: number;
     name: string;
   };
+}
+
+export interface UserSignUpType {
+  user: UserType;
+  code: string;
+  emailSent?: boolean;
 }
