@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-export const onGlobalError = (msg: string) => {
+export const onGlobalError = (msg: string): void => {
   toast.error(msg, {
     style: {
       borderRadius: "10px",
