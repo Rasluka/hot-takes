@@ -4,7 +4,6 @@ import { Toaster } from "react-hot-toast";
 import { UserProvider, useUser } from "./contexts/UserContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LoadingSpinner } from "./components/LoadingSpinner";
-import "./App.css";
 
 function AppContent(): ReactElement {
   const { isLoading } = useUser();
@@ -16,7 +15,7 @@ function AppContent(): ReactElement {
   return (
     <>
       <AppRouter />
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
     </>
   );
 }

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme="dark"] *));
 @plugin "daisyui";
 
 :root {
@@ -21,7 +22,6 @@ body {
   font-family: var(--font-montserrat);
 }
 
-/* Reusable nav link */
 @layer components {
   .nav-link {
     @apply relative inline-block px-2 text-base font-medium
@@ -33,8 +33,25 @@ body {
       hover:after:scale-x-100;
   }
 
-  /* Add “fake bold” effect using text-shadow */
   .nav-link:hover {
     text-shadow: 0 0 0.5px currentColor;
+  }
+
+  .input-base {
+    @apply block w-full ps-12 pe-3 py-2.5 border text-sm shadow-xs;
+  }
+
+  .button-base {
+    @apply border p-2 cursor-pointer disabled:cursor-not-allowed bg-black text-white hover:bg-transparent hover:text-black transition-colors duration-600 
+          dark:text-white dark:bg-transparent dark:hover:bg-white font-bold;
+  }
+}
+
+@layer base {
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
   }
 }

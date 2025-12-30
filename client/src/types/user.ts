@@ -13,3 +13,13 @@ export interface UserSignUpType {
   code: string;
   emailSent?: boolean;
 }
+
+export interface SignUpData {
+  nickname: string;
+  email: string;
+}
+
+export interface SignInData {
+  nickname: string;
+  code: string;
+}

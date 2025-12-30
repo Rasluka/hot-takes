@@ -9,7 +9,11 @@ export default function AppRouter(): ReactElement {
       {routes.map((aRoute: AppRoute, idx: number) => {
         if (aRoute.layout) {
           return (
-            <Route key={idx} path={aRoute.path} element={aRoute.layout}>
+            <Route
+              key={idx}
+              path={aRoute.path}
+              element={aRoute.layout ? <aRoute.layout /> : aRoute.element}
+            >
               {aRoute.children?.map(
                 (childRoute: AppRoute, childIdx: number) => (
                   <Route
