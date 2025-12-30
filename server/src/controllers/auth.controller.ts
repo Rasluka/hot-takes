@@ -42,7 +42,7 @@ export class AuthController {
       path: '/',
     });
 
-    return successApiResponse(res, 200, { user }, 'Signed in successfully');
+    return successApiResponse(res, 200, { ...user }, 'Signed in successfully');
   };
 
   getCurrentUser = async (

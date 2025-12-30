@@ -1,16 +1,6 @@
 import { createAxiosInstance } from "./apiService";
 import type { UserType, UserSignUpType } from "../types/user";
-
-interface SignUpData {
-  nickname: string;
-  email: string;
-}
-
-interface SignInData {
-  nickname: string;
-  code: string;
-}
-
+import type { SignUpData, SignInData } from "../types/user";
 interface BaseApiResponse<T = void> {
   data: T;
   status: number;
@@ -33,7 +23,6 @@ export const login = async (data: SignInData): Promise<UserType> => {
 
   return res.data.data;
 };
-
 export const getCurrentUser = async (): Promise<UserType> => {
   const res = await apiClient.get<BaseApiResponse<UserType>>("me");
 

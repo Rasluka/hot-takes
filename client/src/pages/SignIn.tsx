@@ -1,12 +1,15 @@
 import type { JSX } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { login } from "../services/authService";
 import { onGlobalError } from "../utils/global-error";
 import { useUser } from "../contexts/UserContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import type { UserType } from "../types/user";
+import { login } from "../services/authService";
+// import { mockLogin as login } from "../services/mockAutService";
+import { ShieldUser, UserLock } from "lucide-react";
+import { AxiosError } from "axios";
 
 interface ISignInStateForm {
   nickname: string;
@@ -18,6 +21,7 @@ export default function SignIn(): JSX.Element {
     nickname: "",
     code: "",
   });
+  const [loginError, setLoginError] = useState<boolean>(false);
   const userContext = useUser();
   const navigate = useNavigate();
 
@@ -28,11 +32,10 @@ export default function SignIn(): JSX.Element {
       ...formData,
       [name]: value,
     });
+    setLoginError(false);
   };
 
   const onSubmitClicked = async () => {
-    console.table(formData);
-
     if (!formData.nickname || !formData.code) return null;
 
     try {
@@ -42,50 +45,79 @@ export default function SignIn(): JSX.Element {
       void navigate("/");
     } catch (err) {
       console.error(err);
+      let errorMsg: string = "Something went wrong.";
 
-      onGlobalError("Something went wrong!");
+      if (err instanceof AxiosError && err.response) {
+        const responseData = err.response.data as { message?: string };
+        if (responseData.message) {
+          errorMsg = responseData.message;
+        }
+      }
+
+      onGlobalError(errorMsg);
+      setLoginError(true);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-        <legend className="fieldset-legend text-2xl">Sign In</legend>
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+      <div className="card p-12 bg-base-100 rounded-box border border-base-300 shadow-lg">
+        <h1 className="text-2xl font-bold text-center mb-2">Welcome</h1>
 
-        <label className="label">Nickname</label>
-        <input
-          type="text"
-          className="input"
-          placeholder="Nickname"
-          name="nickname"
-          value={formData.nickname}
-          onChange={onInputChange}
-        />
+        <fieldset className="my-2">
+          <label className="label font-bold">Nickname</label>
 
-        <label className="label">Code</label>
-        <input
-          type="password"
-          className="input"
-          placeholder="Code"
-          name="code"
-          value={formData.code}
-          onChange={onInputChange}
-        />
+          <div className="relative">
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <ShieldUser />
+            </div>
+            <input
+              type="text"
+              className="input-base"
+              placeholder="Nickname"
+              name="nickname"
+              value={formData.nickname}
+              onChange={onInputChange}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className="my-2">
+          <label className="label font-bold">Password</label>
+
+          <div className="relative">
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <UserLock />
+            </div>
+            <input
+              type="password"
+              className="input-base"
+              placeholder="Code"
+              name="code"
+              value={formData.code}
+              onChange={onInputChange}
+            />
+          </div>
+        </fieldset>
 
         <button
-          className="btn btn-secondary mt-4"
+          className="button-base mt-4"
           disabled={!formData.nickname || !formData.code}
           onClick={() => void onSubmitClicked()}
         >
           Login
         </button>
 
-        <div className="divider divider-secondary">OR</div>
+        <p className="min-h-5 text-center  text-red-600">
+          {loginError ? "Invalid credentials" : ""}
+        </p>
 
-        <Link to="/signup" className="link link-secondary text-center">
+        <div className="divider divider-neutral dark:divider-primary">OR</div>
+
+        <Link to="/signup" className="link link-hover text-center font-bold">
           Create New Account
         </Link>
-      </fieldset>
+      </div>
     </div>
   );
 }

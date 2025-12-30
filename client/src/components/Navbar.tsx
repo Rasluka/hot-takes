@@ -6,7 +6,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 
 export function MainNavBar(): JSX.Element {
-  const { isAuthenticated, logout } = useUser();
+  const { isAuthenticated, logout, user } = useUser();
   const { currentTheme, toggleTheme } = useTheme();
 
   const onToggleTheme = () => {
@@ -119,17 +119,10 @@ export function MainNavBar(): JSX.Element {
         </div>
 
         {isAuthenticated ? (
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
+          <div className="dropdown dropdown-end me-8">
+            <div tabIndex={0} role="button" className="btn btn-circle avatar">
+              <div className="w-10 rounded-full bg-black flex justify-center items-center text-xl text-white font-bold">
+                {user?.nickname.charAt(0).toUpperCase()}
               </div>
             </div>
             <ul
@@ -149,7 +142,7 @@ export function MainNavBar(): JSX.Element {
                 </a>
               </li>
               <li>
-                <button onClick={logout}>Logout</button>
+                <button onClick={() => void logout()}>Logout</button>
               </li>
             </ul>
           </div>
