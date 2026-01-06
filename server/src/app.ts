@@ -9,6 +9,7 @@ import { createFavoriteTakeRouter } from './routes/favorite-take.route';
 import prisma from './prisma';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { setupSwagger } from './config/swagger.config';
 
 const allowedOrigins = ['http://127.0.0.1:3000', 'http://localhost:3000'];
 
@@ -46,6 +47,7 @@ app.get(`${API_VERSION}/live`, (_, res) => {
   });
 });
 
+setupSwagger(app);
 app.use(errorHandler);
 
 export default app;

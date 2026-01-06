@@ -1,9 +1,9 @@
 import app from './app';
 import prisma from './prisma';
 
-const PORT = process.env.SERVER_PORT || 8000;
+const PORT = process.env.SERVER_PORT || 5000;
 
-async function startServer() {
+async function startServer(): Promise<void> {
   try {
     await prisma.$queryRaw`SELECT 1`;
 
