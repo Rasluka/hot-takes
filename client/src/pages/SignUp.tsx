@@ -1,18 +1,19 @@
 import type { JSX } from 'react';
 // import { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import { signUp } from "../services/authService";
 // import { isValidEmail } from '../utils/validators';
 // import toast from 'react-hot-toast';
 // import { CodeModal } from '../components/CodeModal';
 // import { useNavigate } from 'react-router-dom';
-// import { AxiosError } from 'axios';
-// import { mockSignUp as signUp1 } from '../services/mockAutService';
+// import { isAxiosError } from 'axios';
+import { signUp } from '../services/authService';
+// import { mockSignUp as signUp } from '../services/mockAutService';
 import { ShieldUser, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import clsx from 'clsx';
 
 // interface ISignUpStateForm {
 //   nickname: string;
@@ -38,11 +39,15 @@ export default function SignUp(): JSX.Element {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
-    reset,
+    formState: { errors, isValid, isSubmitting },
+    // reset,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
+    defaultValues: {
+      nickname: 'failed',
+      email: 'vargklee@hotmail.com',
+    },
   });
 
   // const [formData, setFormData] = useState<ISignUpStateForm>({
@@ -65,9 +70,15 @@ export default function SignUp(): JSX.Element {
   //   });
   // };
 
-  const onFormSubmit: SubmitHandler<FormData> = (data: FormData) => {
-    console.table(data);
-    reset();
+  const onFormSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    try {
+      console.table(data);
+
+      const res = await signUp(data);
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
 
     // setIsLoading(true);
     // setIsNicknameError(false);
@@ -79,64 +90,64 @@ export default function SignUp(): JSX.Element {
     //   return;
     // }
 
-    try {
-      // const { user, code } = await signUp1(formData);
-      // if (code && user) {
-      //   // setShowModal(true);
-      //   // setNewUserData({
-      //   //   nickname: user.nickname,
-      //   //   code: code,
-      //   // });
-      // } else {
-      //   throw new Error('Something went wrong!!');
-      // }
-    } catch {
-      // Use unknown instead of any
-      // Check if it's an AxiosError
-      // if (err instanceof AxiosError) {
-      //   const res = err.response;
-      //   console.error('error ===>', res);
-      //   const errMsg = res?.data?.message || err.message;
-      //   toast.error(errMsg, {
-      //     style: {
-      //       borderRadius: '10px',
-      //       background: '#333',
-      //       color: '#fff',
-      //     },
-      //   });
-      //   if (res) {
-      //     const { status, data } = res;
-      //     const message = (data.message || '').toLowerCase();
-      //     if (status === 409) {
-      //       if (message.includes('email')) {
-      //         setIsEmailError(true);
-      //       } else if (message.includes('nickname')) {
-      //         setIsNicknameError(true);
-      //       }
-      //     }
-      // }
-      // } else if (err instanceof Error) {
-      //   // Handle non-Axios errors
-      //   toast.error(err.message, {
-      //     style: {
-      //       borderRadius: '10px',
-      //       background: '#333',
-      //       color: '#fff',
-      //     },
-      //   });
-      // } else {
-      //   // Handle unknown error types
-      //   toast.error('An unknown error occurred', {
-      //     style: {
-      //       borderRadius: '10px',
-      //       background: '#333',
-      //       color: '#fff',
-      //     },
-      //   });
-      // }
-    } finally {
-      // setIsLoading(false);
-    }
+    // try {
+    //   // const { user, code } = await signUp1(formData);
+    //   // if (code && user) {
+    //   //   // setShowModal(true);
+    //   //   // setNewUserData({
+    //   //   //   nickname: user.nickname,
+    //   //   //   code: code,
+    //   //   // });
+    //   // } else {
+    //   //   throw new Error('Something went wrong!!');
+    //   // }
+    // } catch {
+    //   // Use unknown instead of any
+    //   // Check if it's an AxiosError
+    //   // if (err instanceof AxiosError) {
+    //   //   const res = err.response;
+    //   //   console.error('error ===>', res);
+    //   //   const errMsg = res?.data?.message || err.message;
+    //   //   toast.error(errMsg, {
+    //   //     style: {
+    //   //       borderRadius: '10px',
+    //   //       background: '#333',
+    //   //       color: '#fff',
+    //   //     },
+    //   //   });
+    //   //   if (res) {
+    //   //     const { status, data } = res;
+    //   //     const message = (data.message || '').toLowerCase();
+    //   //     if (status === 409) {
+    //   //       if (message.includes('email')) {
+    //   //         setIsEmailError(true);
+    //   //       } else if (message.includes('nickname')) {
+    //   //         setIsNicknameError(true);
+    //   //       }
+    //   //     }
+    //   // }
+    //   // } else if (err instanceof Error) {
+    //   //   // Handle non-Axios errors
+    //   //   toast.error(err.message, {
+    //   //     style: {
+    //   //       borderRadius: '10px',
+    //   //       background: '#333',
+    //   //       color: '#fff',
+    //   //     },
+    //   //   });
+    //   // } else {
+    //   //   // Handle unknown error types
+    //   //   toast.error('An unknown error occurred', {
+    //   //     style: {
+    //   //       borderRadius: '10px',
+    //   //       background: '#333',
+    //   //       color: '#fff',
+    //   //     },
+    //   //   });
+    //   // }
+    // } finally {
+    //   // setIsLoading(false);
+    // }
   };
 
   // const onModalClose = () => {
@@ -158,12 +169,17 @@ export default function SignUp(): JSX.Element {
             <input
               type="text"
               {...register('nickname')}
-              className={`input-base ${errors.nickname ? 'border-red-400' : ''}`}
+              className={clsx('input-base', {
+                'border-red-400': errors.nickname,
+              })}
               placeholder="Nickname"
-              name="nickname"
             />
           </div>
-          {errors.nickname && <p>{errors.nickname.message}</p>}
+          {errors.nickname && (
+            <p className="text-red-400 text-center">
+              {errors.nickname.message}
+            </p>
+          )}
         </fieldset>
 
         <fieldset className="my-2">
@@ -177,22 +193,27 @@ export default function SignUp(): JSX.Element {
             <input
               type="email"
               {...register('email')}
-              className={`input-base ${errors.email ? 'border-red-400' : ''}`}
+              className={clsx('input-base', {
+                'border-red-400': errors.email,
+              })}
               placeholder="Email"
             />
           </div>
-          {errors.email && <p>{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-red-400 text-center">{errors.email.message}</p>
+          )}
         </fieldset>
 
         <button
-          // className="btn btn-outline btn-secondary mt-4"
           type="submit"
           className="button-base mt-4"
-          disabled={!isValid}
-          // disabled={!formData.nickname || !formData.email || isLoading}
-          // onClick={() => void onSubmitClicked()}
+          disabled={!isValid || isSubmitting}
         >
-          <span className="text-lg">Create Account</span>
+          {isSubmitting ? (
+            <span className="loading loading-ring loading-lg"></span>
+          ) : (
+            <span className="text-lg">Create Account</span>
+          )}
         </button>
 
         <div className="divider bg-base-100">OR</div>
