@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { CodeModal } from '../components/CodeModal';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { mockSignUp as signUp } from '../services/mockAutService';
+import { mockSignUp as signUp1 } from '../services/mockAutService';
 import { ShieldUser, Mail } from 'lucide-react';
 
 interface ISignUpStateForm {
@@ -53,7 +53,7 @@ export default function SignUp(): JSX.Element {
     }
 
     try {
-      const { user, code } = await signUp(formData);
+      const { user, code } = await signUp1(formData);
 
       if (code && user) {
         setShowModal(true);
