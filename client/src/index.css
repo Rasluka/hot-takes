@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where([data-theme="dark"] *));
 @plugin "daisyui";
 
 :root {
-  --font-roboto: "Roboto", sans-serif;
-  --font-montserrat: "Montserrat", sans-serif;
-  --font-manrope: "Manrope", sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-manrope: 'Manrope', sans-serif;
 }
 
 .roboto {
@@ -44,6 +44,10 @@ body {
   .button-base {
     @apply border p-2 cursor-pointer disabled:cursor-not-allowed bg-black text-white hover:bg-transparent hover:text-black transition-colors duration-600 
           dark:text-white dark:bg-transparent dark:hover:bg-white font-bold;
+  }
+
+  .form-base {
+    @apply card p-12 bg-base-100 rounded-box border border-base-300 shadow-lg;
   }
 }
 

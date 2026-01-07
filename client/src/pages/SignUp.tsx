@@ -1,129 +1,152 @@
 import type { JSX } from 'react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { Link } from 'react-router-dom';
 // import { signUp } from "../services/authService";
-import { isValidEmail } from '../utils/validators';
-import toast from 'react-hot-toast';
-import { CodeModal } from '../components/CodeModal';
-import { useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
-import { mockSignUp as signUp1 } from '../services/mockAutService';
+// import { isValidEmail } from '../utils/validators';
+// import toast from 'react-hot-toast';
+// import { CodeModal } from '../components/CodeModal';
+// import { useNavigate } from 'react-router-dom';
+// import { AxiosError } from 'axios';
+// import { mockSignUp as signUp1 } from '../services/mockAutService';
 import { ShieldUser, Mail } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-interface ISignUpStateForm {
-  nickname: string;
-  email: string;
-}
+// interface ISignUpStateForm {
+//   nickname: string;
+//   email: string;
+// }
 
-interface INewUser {
-  nickname: string;
-  code: string;
-}
+// interface INewUser {
+//   nickname: string;
+//   code: string;
+// }
+
+const formSchema = z.object({
+  nickname: z
+    .string()
+    .min(1, 'Nickname is required')
+    .max(20, 'Nickname too long'),
+  email: z.email().min(1, 'Email is required'),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function SignUp(): JSX.Element {
-  const [formData, setFormData] = useState<ISignUpStateForm>({
-    nickname: 'test',
-    email: 'test@test.com',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    mode: 'onChange',
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // const [formData, setFormData] = useState<ISignUpStateForm>({
+  //   nickname: 'test',
+  //   email: 'test@test.com',
+  // });
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   // const [isNicknameError, setIsNicknameError] = useState<boolean>(false);
   // const [isEmailError, setIsEmailError] = useState<boolean>(false);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [newUserData, setNewUserData] = useState<INewUser | null>(null);
-  const navigate = useNavigate();
+  // const [showModal, setShowModal] = useState<boolean>(false);
+  // const [newUserData, setNewUserData] = useState<INewUser | null>(null);
+  // const navigate = useNavigate();
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  // const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
 
-  const onSubmitClicked = async () => {
-    setIsLoading(true);
+  const onFormSubmit: SubmitHandler<FormData> = (data: FormData) => {
+    console.table(data);
+    reset();
+
+    // setIsLoading(true);
     // setIsNicknameError(false);
     // setIsEmailError(false);
 
-    if (!isValidEmail(formData.email)) {
-      // setIsEmailError(true);
-      setIsLoading(false);
-      return;
-    }
+    // if (!isValidEmail(formData.email)) {
+    //   setIsEmailError(true);
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     try {
-      const { user, code } = await signUp1(formData);
-
-      if (code && user) {
-        setShowModal(true);
-        setNewUserData({
-          nickname: user.nickname,
-          code: code,
-        });
-      } else {
-        throw new Error('Something went wrong!!');
-      }
-    } catch (err: unknown) {
+      // const { user, code } = await signUp1(formData);
+      // if (code && user) {
+      //   // setShowModal(true);
+      //   // setNewUserData({
+      //   //   nickname: user.nickname,
+      //   //   code: code,
+      //   // });
+      // } else {
+      //   throw new Error('Something went wrong!!');
+      // }
+    } catch {
       // Use unknown instead of any
       // Check if it's an AxiosError
-      if (err instanceof AxiosError) {
-        const res = err.response;
-        console.error('error ===>', res);
-        // const errMsg = res?.data?.message || err.message;
-
-        // toast.error(errMsg, {
-        //   style: {
-        //     borderRadius: '10px',
-        //     background: '#333',
-        //     color: '#fff',
-        //   },
-        // });
-
-        // if (res) {
-        //   const { status, data } = res;
-        //   const message = (data.message || '').toLowerCase();
-
-        //   if (status === 409) {
-        //     if (message.includes('email')) {
-        //       setIsEmailError(true);
-        //     } else if (message.includes('nickname')) {
-        //       setIsNicknameError(true);
-        //     }
-        //   }
-        // }
-      } else if (err instanceof Error) {
-        // Handle non-Axios errors
-        toast.error(err.message, {
-          style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-          },
-        });
-      } else {
-        // Handle unknown error types
-        toast.error('An unknown error occurred', {
-          style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-          },
-        });
-      }
+      // if (err instanceof AxiosError) {
+      //   const res = err.response;
+      //   console.error('error ===>', res);
+      //   const errMsg = res?.data?.message || err.message;
+      //   toast.error(errMsg, {
+      //     style: {
+      //       borderRadius: '10px',
+      //       background: '#333',
+      //       color: '#fff',
+      //     },
+      //   });
+      //   if (res) {
+      //     const { status, data } = res;
+      //     const message = (data.message || '').toLowerCase();
+      //     if (status === 409) {
+      //       if (message.includes('email')) {
+      //         setIsEmailError(true);
+      //       } else if (message.includes('nickname')) {
+      //         setIsNicknameError(true);
+      //       }
+      //     }
+      // }
+      // } else if (err instanceof Error) {
+      //   // Handle non-Axios errors
+      //   toast.error(err.message, {
+      //     style: {
+      //       borderRadius: '10px',
+      //       background: '#333',
+      //       color: '#fff',
+      //     },
+      //   });
+      // } else {
+      //   // Handle unknown error types
+      //   toast.error('An unknown error occurred', {
+      //     style: {
+      //       borderRadius: '10px',
+      //       background: '#333',
+      //       color: '#fff',
+      //     },
+      //   });
+      // }
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
-  const onModalClose = () => {
-    setShowModal(false);
-    void navigate('/signin');
-  };
+  // const onModalClose = () => {
+  //   setShowModal(false);
+  //   void navigate('/signin');
+  // };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <div className="card p-12 bg-base-100 rounded-box border border-base-300 shadow-lg">
+      <form className="form-base" onSubmit={handleSubmit(onFormSubmit)}>
         <h1 className="text-2xl font-bold text-center mb-2">Sign Up</h1>
 
         <fieldset className="my-2">
@@ -134,20 +157,13 @@ export default function SignUp(): JSX.Element {
             </div>
             <input
               type="text"
-              // className={`input ${isNicknameError && 'input-error'}`}
-              className="input-base"
+              {...register('nickname')}
+              className={`input-base ${errors.nickname ? 'border-red-400' : ''}`}
               placeholder="Nickname"
               name="nickname"
-              value={formData.nickname}
-              onChange={onInputChange}
-              // onFocus={() => setIsNicknameError(false)}
             />
-            {/* {isNicknameError && (
-          <label className="label text-red-600">
-            Nickname is already being used
-          </label>
-        )} */}
           </div>
+          {errors.nickname && <p>{errors.nickname.message}</p>}
         </fieldset>
 
         <fieldset className="my-2">
@@ -160,33 +176,23 @@ export default function SignUp(): JSX.Element {
 
             <input
               type="email"
-              // className={`input ${isEmailError && 'input-error'}`}
-              className="input-base"
+              {...register('email')}
+              className={`input-base ${errors.email ? 'border-red-400' : ''}`}
               placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={onInputChange}
-              // onFocus={() => setIsEmailError(false)}
             />
-            {/* {isEmailError && (
-          <label className="label text-red-600">
-            Email is already being used
-          </label>
-        )} */}
           </div>
+          {errors.email && <p>{errors.email.message}</p>}
         </fieldset>
 
         <button
           // className="btn btn-outline btn-secondary mt-4"
+          type="submit"
           className="button-base mt-4"
-          disabled={!formData.nickname || !formData.email || isLoading}
-          onClick={() => void onSubmitClicked()}
+          disabled={!isValid}
+          // disabled={!formData.nickname || !formData.email || isLoading}
+          // onClick={() => void onSubmitClicked()}
         >
-          {isLoading ? (
-            <span className="loading loading-ring loading-lg"></span>
-          ) : (
-            <span className="text-lg">Create Account</span>
-          )}
+          <span className="text-lg">Create Account</span>
         </button>
 
         <div className="divider bg-base-100">OR</div>
@@ -195,16 +201,16 @@ export default function SignUp(): JSX.Element {
         <Link to="/signin" className="link link-hover text-center font-bold">
           Log In
         </Link>
-      </div>
+      </form>
 
-      {newUserData && showModal && (
+      {/* {newUserData && showModal && (
         <CodeModal
           nickname={newUserData.nickname}
           code={newUserData.code}
           isOpen={showModal}
           onClose={onModalClose}
         />
-      )}
+      )} */}
     </div>
   );
 }
