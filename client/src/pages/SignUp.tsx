@@ -1,29 +1,17 @@
-import type { JSX } from 'react';
-// import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
-// import { isValidEmail } from '../utils/validators';
-// import toast from 'react-hot-toast';
-// import { CodeModal } from '../components/CodeModal';
-// import { useNavigate } from 'react-router-dom';
-// import { isAxiosError } from 'axios';
 import { signUp } from '../services/authService';
 // import { mockSignUp as signUp } from '../services/mockAutService';
 import { ShieldUser, Mail } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import type { SubmitHandler } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import clsx from 'clsx';
-
-// interface ISignUpStateForm {
-//   nickname: string;
-//   email: string;
-// }
-
-// interface INewUser {
-//   nickname: string;
-//   code: string;
-// }
+import { isAxiosError } from 'axios';
+import { onGlobalError } from '../utils/global-error';
+import type { UserSignUpType } from '../types/user';
+import { CodeModal } from '../components/CodeModal';
+import { useNavigate } from 'react-router';
 
 const formSchema = z.object({
   nickname: z
@@ -36,124 +24,53 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function SignUp(): JSX.Element {
+  const [signUpResult, setSignUpResult] = useState<UserSignUpType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
-    // reset,
+    setError,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
-    defaultValues: {
-      nickname: 'failed',
-      email: 'vargklee@hotmail.com',
-    },
   });
-
-  // const [formData, setFormData] = useState<ISignUpStateForm>({
-  //   nickname: 'test',
-  //   email: 'test@test.com',
-  // });
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [isNicknameError, setIsNicknameError] = useState<boolean>(false);
-  // const [isEmailError, setIsEmailError] = useState<boolean>(false);
-  // const [showModal, setShowModal] = useState<boolean>(false);
-  // const [newUserData, setNewUserData] = useState<INewUser | null>(null);
-  // const navigate = useNavigate();
-
-  // const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // };
+  const navigate = useNavigate();
 
   const onFormSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     try {
-      console.table(data);
-
       const res = await signUp(data);
       console.log(res);
-    } catch (error) {
-      console.error(error);
+      setSignUpResult(res);
+      setIsModalOpen(true);
+    } catch (err) {
+      if (isAxiosError(err) && err.message) {
+        const errorMsg = err.message;
+
+        onGlobalError(errorMsg);
+
+        if (errorMsg.toLowerCase().includes('email')) {
+          setError('email', {
+            type: 'manual',
+            message: errorMsg,
+          });
+        } else if (errorMsg.toLowerCase().includes('nickname')) {
+          setError('nickname', {
+            type: 'manual',
+            message: errorMsg,
+          });
+        }
+      } else {
+        onGlobalError('Something went wrong!');
+      }
     }
-
-    // setIsLoading(true);
-    // setIsNicknameError(false);
-    // setIsEmailError(false);
-
-    // if (!isValidEmail(formData.email)) {
-    //   setIsEmailError(true);
-    //   setIsLoading(false);
-    //   return;
-    // }
-
-    // try {
-    //   // const { user, code } = await signUp1(formData);
-    //   // if (code && user) {
-    //   //   // setShowModal(true);
-    //   //   // setNewUserData({
-    //   //   //   nickname: user.nickname,
-    //   //   //   code: code,
-    //   //   // });
-    //   // } else {
-    //   //   throw new Error('Something went wrong!!');
-    //   // }
-    // } catch {
-    //   // Use unknown instead of any
-    //   // Check if it's an AxiosError
-    //   // if (err instanceof AxiosError) {
-    //   //   const res = err.response;
-    //   //   console.error('error ===>', res);
-    //   //   const errMsg = res?.data?.message || err.message;
-    //   //   toast.error(errMsg, {
-    //   //     style: {
-    //   //       borderRadius: '10px',
-    //   //       background: '#333',
-    //   //       color: '#fff',
-    //   //     },
-    //   //   });
-    //   //   if (res) {
-    //   //     const { status, data } = res;
-    //   //     const message = (data.message || '').toLowerCase();
-    //   //     if (status === 409) {
-    //   //       if (message.includes('email')) {
-    //   //         setIsEmailError(true);
-    //   //       } else if (message.includes('nickname')) {
-    //   //         setIsNicknameError(true);
-    //   //       }
-    //   //     }
-    //   // }
-    //   // } else if (err instanceof Error) {
-    //   //   // Handle non-Axios errors
-    //   //   toast.error(err.message, {
-    //   //     style: {
-    //   //       borderRadius: '10px',
-    //   //       background: '#333',
-    //   //       color: '#fff',
-    //   //     },
-    //   //   });
-    //   // } else {
-    //   //   // Handle unknown error types
-    //   //   toast.error('An unknown error occurred', {
-    //   //     style: {
-    //   //       borderRadius: '10px',
-    //   //       background: '#333',
-    //   //       color: '#fff',
-    //   //     },
-    //   //   });
-    //   // }
-    // } finally {
-    //   // setIsLoading(false);
-    // }
   };
 
-  // const onModalClose = () => {
-  //   setShowModal(false);
-  //   void navigate('/signin');
-  // };
+  const onModalClose = () => {
+    setIsModalOpen(false);
+    setSignUpResult(null);
+    void navigate('/signin', { replace: true });
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -224,14 +141,14 @@ export default function SignUp(): JSX.Element {
         </Link>
       </form>
 
-      {/* {newUserData && showModal && (
+      {signUpResult && isModalOpen && (
         <CodeModal
-          nickname={newUserData.nickname}
-          code={newUserData.code}
-          isOpen={showModal}
+          nickname={signUpResult.user.nickname}
+          code={signUpResult.code}
+          isOpen={isModalOpen}
           onClose={onModalClose}
         />
-      )} */}
+      )}
     </div>
   );
 }

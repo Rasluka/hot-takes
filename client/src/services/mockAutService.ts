@@ -1,10 +1,12 @@
 import type { UserType } from '../types/user';
 import type { SignInData, UserSignUpType, SignUpData } from '../types/user';
-import { AxiosError } from 'axios';
+import {
+  mockEmailExistsError,
+  mockNicknameExistsError,
+} from '../utils/mock-errors';
 
 export const mockLogin = async (data: SignInData): Promise<UserType> => {
-  // eslint-disable-next-line @typescript-eslint/typedef
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise<void>((resolve: () => void) => setTimeout(resolve, 6000));
   const mockUser: UserType = {
     id: 2,
     nickname: 'jorgeo',
@@ -20,8 +22,7 @@ export const mockLogin = async (data: SignInData): Promise<UserType> => {
 };
 
 export const mockSignUp = async (data: SignUpData): Promise<UserSignUpType> => {
-  // eslint-disable-next-line @typescript-eslint/typedef
-  await new Promise((resolve) => setTimeout(resolve, 6000));
+  await new Promise<void>((resolve: () => void) => setTimeout(resolve, 1000));
   const mockUserSignUnResponse: UserSignUpType = {
     user: {
       id: 45,
@@ -33,35 +34,13 @@ export const mockSignUp = async (data: SignUpData): Promise<UserSignUpType> => {
     emailSent: false,
   };
 
-  if (data.nickname !== 'failed') {
-    return mockUserSignUnResponse;
+  if (data.nickname.includes('fail')) {
+    throw mockNicknameExistsError();
   }
 
-  const errorConfig = {
-    baseURL: 'http://localhost:5000/api/v1/auth',
-    url: 'signup',
-    method: 'post',
-    data: JSON.stringify(data),
-    headers: {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  };
+  if (data.email.includes('fail')) {
+    throw mockEmailExistsError();
+  }
 
-  const axiosError = new AxiosError(
-    'Request failed with status code 409', // message
-    'ERR_BAD_REQUEST', // code
-    errorConfig, // config
-    {}, // request (optional, e.g., XMLHttpRequest)
-    {
-      // response
-      status: 409,
-      data: { message: 'Email already exists' },
-      headers: {},
-      config: errorConfig,
-    }
-  );
-
-  throw axiosError;
+  return mockUserSignUnResponse;
 };
