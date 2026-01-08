@@ -40,6 +40,12 @@ export default [
           memberVariableDeclaration: true,
         },
       ],
+      "@typescript-eslint/no-misused-promises": [
+          "error", 
+          {
+            "checksVoidReturn": false  // Allow Promise<void> where void is expected
+          }
+        ],
     },
   },
   prettier,
