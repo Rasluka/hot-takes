@@ -1,7 +1,7 @@
-import type { JSX } from "react";
-import toast from "react-hot-toast";
-import { Copy, Check } from "lucide-react";
-import { useState, useRef, useCallback, useEffect } from "react";
+import type { JSX } from 'react';
+import toast from 'react-hot-toast';
+import { Copy, Check } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface CodeModalProps {
   nickname: string;
@@ -21,7 +21,7 @@ export function CodeModal({
 
   const onCodeCopy = useCallback(() => {
     void navigator.clipboard.writeText(code);
-    toast.success("Code copied to clipboard!");
+    toast.success('Code copied to clipboard!');
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -52,18 +52,20 @@ export function CodeModal({
           className="mx-auto mb-4 max-h-24 max-w-full"
         />
         <h1 className="font-bold text-2xl">
-          Welcome <span className="text-[#FF2E63]">{nickname}</span>!
+          Welcome <span className="text-yellow-400">{nickname}</span>!
         </h1>
 
-        <h2 className="text-lg">Your account has been created successfully.</h2>
-        <h2 className="text-lg text-[#FF2E63]">
+        <h2 className="text-lg text-gray-500">
+          Your account has been created successfully.
+        </h2>
+        <h2 className="text-lg">
           Use the code below to log in for the first time:
         </h2>
 
         <div
-          className="w-2/4 mx-auto flex items-center justify-between font-mono text-lg bg-gray-300 0 text-[#08D9D6] rounded-md p-2 cursor-pointer select-none hover:bg-gray-200 transition"
+          className="w-2/4 mx-auto flex items-center justify-between font-mono text-lg bg-base-200 border p-2 cursor-pointer select-none hover:bg-base-300 transition"
           onClick={onCodeCopy}
-          title="Click to copy"
+          title="Copy to clipboard"
         >
           <span className="flex-1 text-center font-mono text-lg">{code}</span>
 
@@ -74,10 +76,12 @@ export function CodeModal({
           )}
         </div>
 
-        <h2 className="text-lg">Please save this code somewhere safe.</h2>
+        <h2 className="text-lg text-gray-500">
+          Please save this code somewhere safe.
+        </h2>
 
         <div className="modal-action flex justify-center">
-          <button className="btn btn-outline btn-secondary" onClick={onClose}>
+          <button className="button-base" onClick={onClose}>
             Sign In
           </button>
         </div>
