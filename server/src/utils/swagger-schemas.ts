@@ -94,10 +94,6 @@
  *           type: string
  *           description: Role name
  *           example: "admin"
- *         description:
- *           type: string
- *           description: Role description
- *           example: "Administrator with full access"
  *     Take:
  *       type: object
  *       properties:

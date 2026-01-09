@@ -10,10 +10,6 @@ const swaggerOptions = {
       version: '1.0.0',
       description:
         'RESTful API for Hot Takes application - Express.js backend with TypeScript',
-      //   contact: {
-      //     name: 'API Support',
-      //     email: 'support@hottakes.com',
-      //   },
       license: {
         name: 'ISC',
         url: 'https://opensource.org/licenses/ISC',
@@ -64,7 +60,8 @@ const swaggerOptions = {
     './src/routes/*.ts',
     './src/controllers/*.ts',
     './src/types/*.ts',
-    './src/config/swagger-schemas.ts',
+    './src/utils/swagger-schemas.ts',
+    './src/docs/*.yaml',
   ],
 };
 

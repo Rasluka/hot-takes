@@ -11,7 +11,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { setupSwagger } from './config/swagger.config';
 
-const allowedOrigins = ['http://127.0.0.1:3000', 'http://localhost:3000'];
+const allowedOrigins = ['http://localhost:5000', 'http://localhost:3000'];
 
 const app = express();
 app.use(express.json());
