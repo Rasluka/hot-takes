@@ -1,7 +1,8 @@
-import type { JSX } from "react";
-import { MainNavBar } from "../components/Navbar";
-// import { MainFooter } from "../components/Footer";
-import { Outlet } from "react-router-dom";
+import type { JSX } from 'react';
+import { Outlet } from 'react-router-dom';
+
+import { Footer } from '@/components/layout/Footer';
+import { MainNavBar } from '@/components/layout/Navbar';
 
 export function MainLayout(): JSX.Element {
   return (
@@ -10,7 +11,7 @@ export function MainLayout(): JSX.Element {
       <main className="grow container mx-auto p-4">
         <Outlet />
       </main>
-      {/* <MainFooter /> */}
+      <Footer />
     </div>
   );
 }

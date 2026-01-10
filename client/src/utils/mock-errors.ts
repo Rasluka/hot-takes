@@ -1,5 +1,6 @@
 import { AxiosError, AxiosHeaders } from 'axios';
-import type { ApiErrorReponse } from '../types/api-response';
+
+import type { ApiErrorReponse } from '@/types/api-response';
 
 export const createMockAxiosError = (
   message: string,

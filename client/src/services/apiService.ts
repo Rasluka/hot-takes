@@ -3,7 +3,8 @@ import axios, {
   type AxiosInstance,
   type AxiosResponse,
 } from 'axios';
-import type { ApiErrorReponse } from '../types/api-response';
+
+import type { ApiErrorReponse } from '@/types/api-response';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 

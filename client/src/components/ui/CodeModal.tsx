@@ -1,7 +1,7 @@
-import type { JSX } from 'react';
-import toast from 'react-hot-toast';
 import { Copy, Check } from 'lucide-react';
+import type { JSX } from 'react';
 import { useState, useRef, useCallback, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface CodeModalProps {
   nickname: string;

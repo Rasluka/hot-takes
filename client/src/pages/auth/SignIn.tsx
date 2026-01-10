@@ -1,15 +1,14 @@
-import type { JSX } from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { onGlobalError } from "../utils/global-error";
-import { useUser } from "../contexts/UserContext";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import type { UserType } from "../types/user";
-import { login } from "../services/authService";
-// import { mockLogin as login } from "../services/mockAutService";
-import { ShieldUser, UserLock } from "lucide-react";
-import { AxiosError } from "axios";
+import { AxiosError } from 'axios';
+import { ShieldUser, UserLock } from 'lucide-react';
+import type { JSX } from 'react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router';
+
+import { useUser } from '@/contexts/UserContext';
+import { login } from '@/services/authService';
+import type { UserType } from '@/types/user';
+import { onGlobalError } from '@/utils/global-error';
 
 interface ISignInStateForm {
   nickname: string;
@@ -18,8 +17,8 @@ interface ISignInStateForm {
 
 export default function SignIn(): JSX.Element {
   const [formData, setFormData] = useState<ISignInStateForm>({
-    nickname: "",
-    code: "",
+    nickname: '',
+    code: '',
   });
   const [loginError, setLoginError] = useState<boolean>(false);
   const userContext = useUser();
@@ -41,11 +40,11 @@ export default function SignIn(): JSX.Element {
     try {
       const user: UserType = await login(formData);
       userContext.login(user);
-      toast.success("Logged in successfully!");
-      void navigate("/");
+      toast.success('Logged in successfully!');
+      void navigate('/');
     } catch (err) {
       console.error(err);
-      let errorMsg: string = "Something went wrong.";
+      let errorMsg: string = 'Something went wrong.';
 
       if (err instanceof AxiosError && err.response) {
         const responseData = err.response.data as { message?: string };
@@ -109,7 +108,7 @@ export default function SignIn(): JSX.Element {
         </button>
 
         <p className="min-h-5 text-center  text-red-600">
-          {loginError ? "Invalid credentials" : ""}
+          {loginError ? 'Invalid credentials' : ''}
         </p>
 
         <div className="divider divider-neutral dark:divider-primary">OR</div>

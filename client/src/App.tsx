@@ -1,9 +1,10 @@
-import AppRouter from "./routes/AppRouter";
-import type { ReactElement } from "react";
-import { Toaster } from "react-hot-toast";
-import { UserProvider, useUser } from "./contexts/UserContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { LoadingSpinner } from "./components/LoadingSpinner";
+import type { ReactElement } from 'react';
+import { Toaster } from 'react-hot-toast';
+
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { UserProvider, useUser } from '@/contexts/UserContext';
+import AppRouter from '@/routes/AppRouter';
 
 function AppContent(): ReactElement {
   const { isLoading } = useUser();

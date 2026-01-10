@@ -1,17 +1,17 @@
-import { useState, type JSX } from 'react';
-import { Link } from 'react-router-dom';
-import { signUp } from '../services/authService';
-// import { mockSignUp as signUp } from '../services/mockAutService';
-import { ShieldUser, Mail } from 'lucide-react';
-import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import clsx from 'clsx';
 import { isAxiosError } from 'axios';
-import { onGlobalError } from '../utils/global-error';
-import type { UserSignUpType } from '../types/user';
-import { CodeModal } from '../components/CodeModal';
+import clsx from 'clsx';
+import { ShieldUser, Mail } from 'lucide-react';
+import { useState, type JSX } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
+import { z } from 'zod';
+
+import { CodeModal } from '@/components/ui/CodeModal';
+import { signUp } from '@/services/authService';
+import type { UserSignUpType } from '@/types/user';
+import { onGlobalError } from '@/utils/global-error';
 
 const formSchema = z.object({
   nickname: z

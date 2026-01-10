@@ -1,31 +1,27 @@
-import type { JSX } from "react";
-import Home from "../pages/Home";
-import SignIn from "../pages/SignIn";
-import SignUp from "../pages/SignUp";
-import { MainLayout } from "../layouts/MainLayout";
-import { MinimalLayout } from "../layouts/MinimalLayout";
-import { GuestRoute } from "./GuestRoute";
-
-export interface AppRoute {
-  path: string;
-  element?: JSX.Element;
-  layout?: React.ComponentType;
-  protected?: boolean;
-  children?: AppRoute[];
-}
+import { MainLayout } from '@/layouts/MainLayout';
+import { MinimalLayout } from '@/layouts/MinimalLayout';
+import SignIn from '@/pages/auth/SignIn';
+import SignUp from '@/pages/auth/SignUp';
+import AboutUs from '@/pages/public/AboutUs';
+import Home from '@/pages/public/Home';
+import { GuestRoute } from '@/routes/GuestRoute';
+import type { AppRoute } from '@/types/route';
 
 export const routes: AppRoute[] = [
   {
-    path: "/",
+    path: '/',
     layout: MainLayout,
-    children: [{ path: "/", element: <Home /> }],
+    children: [
+      { path: '/', element: <Home /> },
+      { path: '/aboutus', element: <AboutUs /> },
+    ],
   },
   {
-    path: "/",
+    path: '/',
     layout: MinimalLayout,
     children: [
       {
-        path: "/signin",
+        path: '/signin',
         element: (
           <GuestRoute>
             <SignIn />
@@ -33,7 +29,7 @@ export const routes: AppRoute[] = [
         ),
       },
       {
-        path: "/signup",
+        path: '/signup',
         element: (
           <GuestRoute>
             <SignUp />

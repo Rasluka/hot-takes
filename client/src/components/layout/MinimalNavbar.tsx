@@ -1,8 +1,9 @@
-import type { JSX } from "react";
-import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { useTheme } from "../contexts/ThemeContext";
-import { Sun, Moon } from "lucide-react";
+import { Menu } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
+import type { JSX } from 'react';
+import { Link } from 'react-router-dom';
+
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function MinimalNavbar(): JSX.Element {
   const { currentTheme, toggleTheme } = useTheme();
@@ -51,7 +52,7 @@ export function MinimalNavbar(): JSX.Element {
 
       <div className="navbar-end">
         <div className="flex me-24">
-          {currentTheme === "dark" ? (
+          {currentTheme === 'dark' ? (
             <div
               className="tooltip tooltip-bottom tooltip-primary"
               data-tip="Switch to light mode "

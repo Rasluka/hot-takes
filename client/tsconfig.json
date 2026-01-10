@@ -13,7 +13,7 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx", // This is correct
+    "jsx": "react-jsx", 
 
     /* Linting */
     "strict": true,
@@ -24,7 +24,22 @@
     "noUncheckedSideEffectImports": true,
 
     /* Type Definitions */
-    "types": ["react", "react-dom"] // Ensure this is correct
+    "types": ["react", "react-dom"],
+
+    /*Aliases*/
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/contexts/*": ["src/contexts/*"],
+      "@/layouts/*": ["src/layouts/*"],
+      "@/pages/*": ["src/pages/*"],
+      "@/services/*": ["src/services/*"],
+      "@/types/*": ["src/types/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/routes/*": ["src/routes/*"]
+    }
   },
   "include": ["src", "vite.config.ts"],
   "exclude": ["node_modules"]

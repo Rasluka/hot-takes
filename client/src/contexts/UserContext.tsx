@@ -1,9 +1,10 @@
-import type { JSX } from "react";
-import { createContext, useState, useContext, useEffect } from "react";
-import type { ReactNode } from "react";
-import type { UserContextType } from "../types/user-context";
-import type { UserType } from "../types/user";
-import { getCurrentUser, userLogout } from "../services/authService";
+import { createContext, useState, useContext, useEffect } from 'react';
+import type { JSX } from 'react';
+import type { ReactNode } from 'react';
+
+import { getCurrentUser, userLogout } from '@/services/authService';
+import type { UserType } from '@/types/user';
+import type { UserContextType } from '@/types/user-context';
 
 interface UserProviderProps {
   children: ReactNode;
@@ -78,7 +79,7 @@ export const UserProvider = ({ children }: UserProviderProps): JSX.Element => {
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error('useUser must be used within a UserProvider');
   }
   return context;
 };
