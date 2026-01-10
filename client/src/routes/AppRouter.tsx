@@ -1,7 +1,9 @@
-import { Routes, Route } from "react-router-dom";
-import type { ReactElement } from "react";
-import type { AppRoute } from ".";
-import { routes } from ".";
+import type { ReactElement } from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+import type { AppRoute } from '@/types/route';
+
+import { routes } from '.';
 
 export default function AppRouter(): ReactElement {
   return (

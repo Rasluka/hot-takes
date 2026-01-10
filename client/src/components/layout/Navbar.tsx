@@ -1,9 +1,10 @@
-import type { JSX } from "react";
-import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { useUser } from "../contexts/UserContext";
-import { useTheme } from "../contexts/ThemeContext";
-import { Sun, Moon } from "lucide-react";
+import { Menu } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
+import type { JSX } from 'react';
+import { Link } from 'react-router-dom';
+
+import { useTheme } from '@/contexts/ThemeContext';
+import { useUser } from '@/contexts/UserContext';
 
 export function MainNavBar(): JSX.Element {
   const { isAuthenticated, logout, user } = useUser();
@@ -93,7 +94,7 @@ export function MainNavBar(): JSX.Element {
       {/* Nav End */}
       <div className="navbar-end">
         <div className="flex me-8">
-          {currentTheme === "dark" ? (
+          {currentTheme === 'dark' ? (
             <div
               className="tooltip tooltip-bottom tooltip-primary"
               data-tip="Switch to light mode "

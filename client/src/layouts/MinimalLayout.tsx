@@ -1,6 +1,7 @@
-import type { JSX } from "react";
-import { MinimalNavbar } from "../components/MinimalNavbar";
-import { Outlet } from "react-router-dom";
+import type { JSX } from 'react';
+import { Outlet } from 'react-router-dom';
+
+import { MinimalNavbar } from '@/components/layout/MinimalNavbar';
 
 export function MinimalLayout(): JSX.Element {
   return (

@@ -1,7 +1,7 @@
-import { createAxiosInstance } from './apiService';
-import type { UserType, UserSignUpType } from '../types/user';
-import type { SignUpData, SignInData } from '../types/user';
-import type { BaseApiResponse } from '../types/api-response';
+import { createAxiosInstance } from '@/services/apiService';
+import type { BaseApiResponse } from '@/types/api-response';
+import type { UserType, UserSignUpType } from '@/types/user';
+import type { SignUpData, SignInData } from '@/types/user';
 
 const apiClient = createAxiosInstance('auth', { withCredentials: true });
 

@@ -1,9 +1,9 @@
-import type { UserType } from '../types/user';
-import type { SignInData, UserSignUpType, SignUpData } from '../types/user';
+import type { UserType } from '@/types/user';
+import type { SignInData, UserSignUpType, SignUpData } from '@/types/user';
 import {
   mockEmailExistsError,
   mockNicknameExistsError,
-} from '../utils/mock-errors';
+} from '@/utils/mock-errors';
 
 export const mockLogin = async (data: SignInData): Promise<UserType> => {
   await new Promise<void>((resolve: () => void) => setTimeout(resolve, 6000));
