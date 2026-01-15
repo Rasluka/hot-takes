@@ -4,6 +4,7 @@ import { NotFoundError } from '../errors/not-found.error';
 import { RoleCreateDto } from '../dto/role/role-create.dto';
 import { RoleUpdateDto } from '../dto/role/role-update.dto';
 import { mapToRoleResponseDto } from '../utils/format-role.util';
+import { ConflictError } from '../errors/conflict.error';
 
 export class RoleService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -27,11 +28,16 @@ export class RoleService {
   }
 
   async create(roleData: RoleCreateDto): Promise<RoleResponseDto> {
-    const role = await this.prisma.userRole.create({
-      data: { name: roleData.name },
-    });
+    try {
+      const role = await this.prisma.userRole.create({
+        data: { name: roleData.name },
+      });
 
-    return mapToRoleResponseDto(role);
+      return mapToRoleResponseDto(role);
+    } catch (err: any) {
+      if (err.code === 'P2002') throw new ConflictError('Duplicate role name.');
+      throw err;
+    }
   }
 
   async updateById(
@@ -46,7 +52,8 @@ export class RoleService {
 
       return mapToRoleResponseDto(role);
     } catch (err: any) {
-      if (err.code === 'P2025') throw new NotFoundError('Role not found!');
+      if (err.code === 'P2025') throw new NotFoundError('Role not found.');
+      if (err.code === 'P2002') throw new ConflictError('Duplicate role name.');
       throw err;
     }
   }
@@ -57,7 +64,7 @@ export class RoleService {
 
       return mapToRoleResponseDto(role);
     } catch (err: any) {
-      if (err.code === 'P2025') throw new NotFoundError('Role not found!');
+      if (err.code === 'P2025') throw new NotFoundError('Role not found');
       throw err;
     }
   }

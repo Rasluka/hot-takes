@@ -18,8 +18,16 @@ export const createRoleRouter = (prisma: PrismaClient): Router => {
 
   router.get('/', asyncWrapper(roleController.getAll));
   router.get('/:id', asyncWrapper(roleController.getById));
-  router.post('/', validate(RoleCreateSchema), asyncWrapper(roleController.create));
-  router.patch('/:id', validate(RoleUpdateSchema), asyncWrapper(roleController.updateById));
+  router.post(
+    '/',
+    validate(RoleCreateSchema),
+    asyncWrapper(roleController.create),
+  );
+  router.patch(
+    '/:id',
+    validate(RoleUpdateSchema),
+    asyncWrapper(roleController.updateById),
+  );
   router.delete('/:id', asyncWrapper(roleController.deleteById));
 
   return router;

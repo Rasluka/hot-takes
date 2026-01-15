@@ -13,8 +13,16 @@ export const createAuthRouter = (prisma: PrismaClient): Router => {
   const authService = new AuthService(prisma);
   const authController = new AuthController(authService);
 
-  router.post('/signup', validate(UserCreateSchema), asyncWrapper(authController.signUp));
-  router.post('/signin', validate(SignInSchema), asyncWrapper(authController.signIn));
+  router.post(
+    '/signup',
+    validate(UserCreateSchema),
+    asyncWrapper(authController.signUp),
+  );
+  router.post(
+    '/signin',
+    validate(SignInSchema),
+    asyncWrapper(authController.signIn),
+  );
   router.get(
     '/me',
     authenticateToken,

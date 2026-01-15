@@ -58,7 +58,7 @@ export class FavoriteTakeController {
     if (isNaN(takeId)) throw new BadRequest('Invalid Take ID.');
 
     await this.favoriteTakeService.removeFavorite(userId, takeId);
-    res.status(404).send();
+    res.status(204).send();
     return;
   };
 }

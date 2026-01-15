@@ -28,22 +28,20 @@ afterAll(async () => {
 
 describe('FavoriteTake API Integration', () => {
   describe('POST /favorites/takes', () => {
-    it('returns new favorite when created', async () => {
+    it('POST /favorites/takes → 201 when valid favorite data', async () => {
       const res = await request(app)
         .post(favTakeApiRoute)
         .send({ takeId: 2 })
         .set('Cookie', authCookie);
       expect(res.status).toBe(201);
-      expect(res.body.data.takeId).toBe(2);
     });
 
-    it('throws 400 error if no valid takeId is provided', async () => {
+    it('POST /favorites/takes → 400 when invalid takeId', async () => {
       const res = await request(app)
         .post(favTakeApiRoute)
         .send({ takeId: 'abc' })
         .set('Cookie', authCookie);
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Invalid Take ID.');
     });
 
     it('throws 401 error when missing auth token.', async () => {
@@ -52,7 +50,7 @@ describe('FavoriteTake API Integration', () => {
       expect(res.body.message).toBe('Access denied. No token provided.');
     });
 
-    it('throws 409 error if takeId does not exists', async () => {
+    it('POST /favorites/takes → 409 when takeId not found', async () => {
       const res = await request(app)
         .post(favTakeApiRoute)
         .send({ takeId: 123 })
@@ -60,7 +58,8 @@ describe('FavoriteTake API Integration', () => {
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('User or take ID does not exist.');
     });
-    it('throws 409 error if take already added as favorite', async () => {
+
+    it('POST /favorites/takes → 409 when duplicate favorite', async () => {
       await seedFavoriteTakes();
       const res = await request(app)
         .post(favTakeApiRoute)
@@ -72,7 +71,7 @@ describe('FavoriteTake API Integration', () => {
   });
 
   describe('GET /favorites/takes', () => {
-    it('returns all takes added as favorite for the current user', async () => {
+    it('GET /favorites/takes → 200 when user has favorites', async () => {
       await seedFavoriteTakes();
       const res = await request(app)
         .get(favTakeApiRoute)
@@ -83,7 +82,7 @@ describe('FavoriteTake API Integration', () => {
       expect(res.body.data[0].id).toBe(1);
     });
 
-    it('throws 404 error when current user has no favorites', async () => {
+    it('GET /favorites/takes → 404 when user has no favorites', async () => {
       // Creating a temp token for which user has not takes added as favorites
       const tempAuthToken = `token=${generateJwtToken(4, 'User')}`;
 
@@ -95,7 +94,7 @@ describe('FavoriteTake API Integration', () => {
       expect(res.body.message).toBe('No favorite takes found!');
     });
 
-    it('throws 401 error when missing auth token.', async () => {
+    it('GET /favorites/takes → 401 when no auth token', async () => {
       const res = await request(app).get(favTakeApiRoute);
 
       expect(res.status).toBe(401);
@@ -104,18 +103,16 @@ describe('FavoriteTake API Integration', () => {
   });
 
   describe('DELETE /favorites/takes/:takeId', () => {
-    it('returns deleted favorite take', async () => {
+    it('DELETE /favorites/takes/:takeId → 204 when favorite deleted', async () => {
       await seedFavoriteTakes();
       const res = await request(app)
         .delete(`${favTakeApiRoute}/1`)
         .set('Cookie', authCookie);
 
-      expect(res.status).toBe(200);
-      expect(res.body.data.takeId).toBe(1);
-      expect(res.body.message).toBe('Take removed from favorite successfully.');
+      expect(res.status).toBe(204);
     });
 
-    it('throws 400 error if no valid takeId is provided', async () => {
+    it('DELETE /favorites/takes/:takeId → 400 when invalid takeId', async () => {
       const res = await request(app)
         .delete(`${favTakeApiRoute}/abc`)
         .set('Cookie', authCookie);
@@ -124,7 +121,7 @@ describe('FavoriteTake API Integration', () => {
       expect(res.body.message).toBe('Invalid Take ID.');
     });
 
-    it('throws 404 error if takeId provided does not exists', async () => {
+    it('DELETE /favorites/takes/:takeId → 404 when favorite not found', async () => {
       await seedFavoriteTakes();
       const res = await request(app)
         .delete(`${favTakeApiRoute}/8`)

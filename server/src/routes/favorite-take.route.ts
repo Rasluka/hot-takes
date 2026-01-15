@@ -17,7 +17,11 @@ export const createFavoriteTakeRouter = (prisma: PrismaClient): Router => {
   router.use(authenticateToken);
 
   router.get('/', asyncWrapper(favoriteTakeController.getUserFavorites));
-  router.post('/', validate(FavoriteAddSchema), asyncWrapper(favoriteTakeController.addFavorite));
+  router.post(
+    '/',
+    validate(FavoriteAddSchema),
+    asyncWrapper(favoriteTakeController.addFavorite),
+  );
   router.delete(
     '/:takeId',
     asyncWrapper(favoriteTakeController.removeFavorite),

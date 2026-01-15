@@ -3,8 +3,6 @@ import { FavoriteTakeService } from '../../services/favorite-take.service';
 import { createMockPrisma } from '../setup/mock.prisma';
 import { NotFoundError } from '../../errors/not-found.error';
 import { ConflictError } from '../../errors/conflict.error';
-// import { TakeResponseDto } from '../../dto/take/take-response.dto';
-// import { FavoriteTakeResponseDto } from '../../dto/favorite-take/favorite-take-response.dto';
 import { TakeEntity } from '../../entities/take.entity';
 import { TakeResponseDto } from '../../dto/take/take-response.dto';
 
@@ -101,7 +99,7 @@ describe('FavoriteTakeService', () => {
 
   describe('addFavorite', () => {
     it('returns new favorite when created', async () => {
-      mockPrisma.favoriteTake.create.mockResolvedValue(true);
+      mockPrisma.favoriteTake.create.mockResolvedValue({});
 
       const result = await service.addFavorite(2, { takeId: 5 });
 
@@ -123,11 +121,25 @@ describe('FavoriteTakeService', () => {
         data: { userId: 1, takeId: 133 },
       });
     });
+
+    it('throws ConflictError if take was already added as favorite', async () => {
+      mockPrisma.favoriteTake.create.mockRejectedValue({ code: 'P2002' });
+
+      const promise = service.addFavorite(1, { takeId: 1 });
+      await expect(promise).rejects.toBeInstanceOf(ConflictError);
+      await expect(promise).rejects.toThrow(
+        'This take is already in your favorites.',
+      );
+      expect(mockPrisma.favoriteTake.create).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.favoriteTake.create).toHaveBeenCalledWith({
+        data: { userId: 1, takeId: 1 },
+      });
+    });
   });
 
   describe('removeFavorite', () => {
     it('returns favorite when deleted', async () => {
-      mockPrisma.favoriteTake.delete.mockResolvedValue(mockedFavoriteTakes);
+      mockPrisma.favoriteTake.delete.mockResolvedValue({});
 
       await service.removeFavorite(1, 2);
 
