@@ -39,9 +39,6 @@ export class TakeController {
     const takeData: TakeCreateDto = req.body;
     const { user } = req;
 
-    if (!takeData.content.trim())
-      throw new BadRequest('Take content was not provided');
-
     if (!user?.userId) throw new BadRequest('User id was not provided');
 
     const result = await this.takeService.create(takeData, user.userId);
@@ -54,9 +51,6 @@ export class TakeController {
     const takeData: TakeUpdateDto = req.body;
 
     if (isNaN(takeId)) throw new BadRequest('Invalid ID.');
-
-    if (!takeData.content.trim())
-      throw new BadRequest('Take content was not provided.');
 
     const result = await this.takeService.updateById(takeId, takeData);
 

@@ -36,7 +36,6 @@ export class FavoriteTakeController {
     const favorite: FavoriteAddDto = req.body;
 
     if (!userId) throw new BadRequest('User not authenticated');
-    if (isNaN(favorite.takeId)) throw new BadRequest('Invalid Take ID.');
 
     const result = await this.favoriteTakeService.addFavorite(userId, favorite);
 
@@ -58,16 +57,8 @@ export class FavoriteTakeController {
     if (!userId) throw new BadRequest('User not authenticated');
     if (isNaN(takeId)) throw new BadRequest('Invalid Take ID.');
 
-    const result = await this.favoriteTakeService.removeFavorite(
-      userId,
-      takeId,
-    );
-
-    return successApiResponse(
-      res,
-      200,
-      result,
-      'Take removed from favorite successfully.',
-    );
+    await this.favoriteTakeService.removeFavorite(userId, takeId);
+    res.status(404).send();
+    return;
   };
 }

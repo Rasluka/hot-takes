@@ -37,8 +37,6 @@ export class RoleController {
   create = async (req: Request, res: Response): Promise<void> => {
     const roleData: RoleCreateDto = req.body;
 
-    if (!roleData.name.trim()) throw new BadRequest('Role name is required.');
-
     const result = await this.roleService.create(roleData);
 
     return successApiResponse(res, 201, result, 'Role created successfully!');
@@ -49,8 +47,6 @@ export class RoleController {
     const roleId = Number(req.params.id);
 
     if (isNaN(roleId)) throw new BadRequest('Invalid ID.');
-
-    if (!roleData.name.trim()) throw new BadRequest('Role name is required.');
 
     const result = await this.roleService.updateById(roleId, roleData);
     return successApiResponse(res, 200, result, 'Role updated successfully!');

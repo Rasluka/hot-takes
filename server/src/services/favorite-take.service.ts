@@ -1,11 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '../errors/not-found.error';
 import { ConflictError } from '../errors/conflict.error';
-import { mapToFavoriteTakeResponseDto } from '../utils/format-favorite-take.util';
 import { mapTakeToResponseDto } from '../utils/format-take.util';
 import { FavoriteAddDto } from '../dto/favorite-take/favorite-take-create.dto';
 import { TakeResponseDto } from '../dto/take/take-response.dto';
-import { FavoriteTakeResponseDto } from '../dto/favorite-take/favorite-take-response.dto';
 
 export class FavoriteTakeService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -30,13 +28,13 @@ export class FavoriteTakeService {
   async addFavorite(
     userId: number,
     favoriteData: FavoriteAddDto,
-  ): Promise<FavoriteTakeResponseDto> {
+  ): Promise<boolean> {
     try {
-      const favorite = await this.prisma.favoriteTake.create({
+      await this.prisma.favoriteTake.create({
         data: { userId, takeId: favoriteData.takeId },
-        include: { take: { include: { user: true } } },
       });
-      return mapToFavoriteTakeResponseDto(favorite);
+
+      return true;
     } catch (err: any) {
       if (err?.code === 'P2003') {
         throw new ConflictError('User or take ID does not exist.');
@@ -50,26 +48,16 @@ export class FavoriteTakeService {
     }
   }
 
-  async removeFavorite(
-    userId: number,
-    takeId: number,
-  ): Promise<FavoriteTakeResponseDto> {
+  async removeFavorite(userId: number, takeId: number): Promise<void> {
     try {
-      const favorite = await this.prisma.favoriteTake.delete({
+      await this.prisma.favoriteTake.delete({
         where: {
           userId_takeId: {
             userId: userId,
             takeId: takeId,
           },
         },
-        include: {
-          take: {
-            include: { user: true },
-          },
-        },
       });
-
-      return mapToFavoriteTakeResponseDto(favorite);
     } catch (err: any) {
       if (err?.code === 'P2025') {
         throw new NotFoundError(

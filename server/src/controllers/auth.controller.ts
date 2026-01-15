@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { successApiResponse } from '../utils/api-response.util';
 import { AuthenticatedRequest } from '../types/auth-request';
-import { BadRequest } from '../errors/bad-request.error';
 import {
   UserCreateDto,
   UserCreateResponseDto,
@@ -20,10 +19,6 @@ export class AuthController {
   signUp = async (req: Request, res: Response): Promise<void> => {
     const userData: UserCreateDto = req.body;
 
-    if (!userData.email || !userData.nickname) {
-      throw new BadRequest('Email and nickname are required.');
-    }
-
     const results: UserCreateResponseDto =
       await this.authService.signUp(userData);
 
@@ -32,10 +27,6 @@ export class AuthController {
 
   signIn = async (req: Request, res: Response): Promise<void> => {
     const userData: SignInDto = req.body;
-
-    if (!userData.nickname || !userData.code || userData.code.length !== 8) {
-      throw new BadRequest('Invalid credentials.');
-    }
 
     const { user, token } = await this.authService.signIn(userData);
 

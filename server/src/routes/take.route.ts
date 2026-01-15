@@ -4,6 +4,9 @@ import { TakeController } from '../controllers/take.controller';
 import { asyncWrapper } from '../utils/async-wrapper.util';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth-token.middleware';
+import { validate } from '../middleware/validation.middleware';
+import { TakeCreateSchema } from '../dto/take/take-create.dto';
+import { TakeUpdateSchema } from '../dto/take/take-update.dto';
 
 export const createTakeRouter = (prisma: PrismaClient): Router => {
   const router = express.Router();
@@ -12,10 +15,11 @@ export const createTakeRouter = (prisma: PrismaClient): Router => {
 
   router.get('/', asyncWrapper(takeController.getAll));
   router.get('/:id', asyncWrapper(takeController.getById));
-  router.post('/', authenticateToken, asyncWrapper(takeController.create));
+  router.post('/', authenticateToken, validate(TakeCreateSchema), asyncWrapper(takeController.create));
   router.put(
     '/:id',
     authenticateToken,
+    validate(TakeUpdateSchema),
     asyncWrapper(takeController.updateById),
   );
   router.delete(

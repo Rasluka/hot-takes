@@ -117,7 +117,7 @@ describe('RoleController', () => {
       expect(res.status).toBe(201);
       expect(res.body.message).toBe('Role created successfully!');
       expect(res.body.data.name).toBe('Admin');
-      expect(mockCreate).toHaveBeenCalledWith('Admin');
+      expect(mockCreate).toHaveBeenCalledWith({ name: 'Admin' });
     });
 
     it('throws 400 error if no role name is provided.', async () => {
@@ -128,40 +128,40 @@ describe('RoleController', () => {
 
       expect(res.status).toBe(400);
       expect(mockCreate).not.toHaveBeenCalled();
-      expect(res.body.message).toBe('Role name is required.');
+      expect(res.body.message).toContain('Validation failed: name:');
     });
   });
 
-  describe('PUT /roles/:id', () => {
+  describe('PATCH /roles/:id', () => {
     it('returns role when updated', async () => {
       mockUpdateById.mockResolvedValue(mockRoles[0]);
       const roleId = 1;
 
       const res = await request(app)
-        .put(`${roleApiRoute}/${roleId}`)
+        .patch(`${roleApiRoute}/${roleId}`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 
       expect(res.status).toBe(200);
       expect(res.body.data.name).toBe('Admin');
-      expect(mockUpdateById).toHaveBeenCalledWith(1, 'Admin');
+      expect(mockUpdateById).toHaveBeenCalledWith(1, { name: 'Admin' });
       expect(mockUpdateById).toHaveBeenCalledTimes(1);
     });
 
     it('throws 400 error if no role name is provided.', async () => {
       const res = await request(app)
-        .put(`${roleApiRoute}/1`)
+        .patch(`${roleApiRoute}/1`)
         .send({ age: 2 })
         .set('Cookie', authCookie);
 
       expect(res.status).toBe(400);
       expect(mockUpdateById).not.toHaveBeenCalled();
-      expect(res.body.message).toBe('Role name is required.');
+      expect(res.body.message).toContain('Validation failed: name:');
     });
 
     it('throws 400 error if no roleId is provided.', async () => {
       const res = await request(app)
-        .put(`${roleApiRoute}/one`)
+        .patch(`${roleApiRoute}/one`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 
@@ -173,8 +173,8 @@ describe('RoleController', () => {
     it('throws 404 error if role not found when updating', async () => {
       mockUpdateById.mockRejectedValue(new NotFoundError('Role not found!'));
 
-      const res = await request(app)
-        .put(`${roleApiRoute}/1`)
+const res = await request(app)
+        .patch(`${roleApiRoute}/2`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 

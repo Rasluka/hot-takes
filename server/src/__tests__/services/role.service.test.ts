@@ -68,11 +68,11 @@ describe('RoleService', () => {
 
       mockPrisma.userRole.create.mockResolvedValue(newRole);
 
-      const result = await service.create(newRoleName);
+      const result = await service.create({ name: newRoleName });
 
       expect(result).toEqual(newRole);
       expect(mockPrisma.userRole.create).toHaveBeenCalledWith({
-        data: { name: newRoleName },
+        data: { name: 'Superuser' },
       });
 
       expect(mockPrisma.userRole.create).toHaveBeenCalledTimes(1);
@@ -86,13 +86,13 @@ describe('RoleService', () => {
 
       mockPrisma.userRole.update.mockResolvedValue(role);
 
-      const result = await service.updateById(1, newRoleName);
+      const result = await service.updateById(1, { name: newRoleName });
 
       expect(result.name).toBe(newRoleName);
 
       expect(mockPrisma.userRole.update).toHaveBeenCalledWith({
         where: { id: 1 },
-        data: { name: newRoleName },
+        data: { name: 'Updated role' },
       });
 
       expect(mockPrisma.userRole.update).toHaveBeenCalledTimes(1);
@@ -101,7 +101,7 @@ describe('RoleService', () => {
     it('throws NotFoundError if no role exists with given id', async () => {
       mockPrisma.userRole.update.mockRejectedValue({ code: 'P2025' });
 
-      await expect(service.updateById(2, 'Updated Name')).rejects.toThrow(
+      await expect(service.updateById(2, { name: 'Updated Name' })).rejects.toThrow(
         NotFoundError,
       );
 
