@@ -19,7 +19,7 @@ afterAll(async () => {
 
 describe('Role API Integration', () => {
   describe('POST /roles', () => {
-    it('creates a new role and returns it', async () => {
+    it('POST /roles → 201 when valid role data', async () => {
       const res = await request(app)
         .post(roleApiRoute)
         .send({ name: 'Tester' })
@@ -34,17 +34,16 @@ describe('Role API Integration', () => {
       expect(dbRole).not.toBeNull();
     });
 
-    it('throws 400 error if no role name is provided.', async () => {
+    it('POST /roles → 400 when empty name', async () => {
       const res = await request(app)
         .post(roleApiRoute)
         .send({ name: '' })
         .set('Cookie', authCookie);
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Role name is required.');
     });
 
-    it('throws 401 error when missing auth token.', async () => {
+    it('POST /roles → 401 when no auth token', async () => {
       const res = await request(app)
         .post(roleApiRoute)
         .send({ name: 'Tester' });

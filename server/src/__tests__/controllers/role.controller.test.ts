@@ -1,7 +1,8 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Role } from '../../types/role';
+import { RoleResponseDto } from '../../dto/role/role-response.dto';
 import { generateJwtToken } from '../../utils/generate-token.util';
+// import { BadRequest } from '../../errors/bad-request.error';
 
 const authCookie = `token=${generateJwtToken(1, 'Admin')}`;
 const roleApiRoute = '/api/v1/roles';
@@ -23,7 +24,7 @@ const {
     mockRoles: [
       { id: 1, name: 'Admin' },
       { id: 2, name: 'User' },
-    ] as Role[],
+    ] as RoleResponseDto[],
   };
 });
 
@@ -50,7 +51,7 @@ describe('RoleController', () => {
   });
 
   describe('GET /roles', () => {
-    it('returns all roles', async () => {
+    it('GET /roles → 200 when roles exist', async () => {
       mockGetAll.mockResolvedValue(mockRoles);
 
       const res = await request(app)
@@ -61,7 +62,7 @@ describe('RoleController', () => {
       expect(res.body.data).toEqual(mockRoles);
     });
 
-    it('throws 404 error if no roles found.', async () => {
+    it('GET /roles → 404 when no roles found', async () => {
       mockGetAll.mockRejectedValue(new NotFoundError('No roles found!'));
 
       const res = await request(app)
@@ -73,7 +74,7 @@ describe('RoleController', () => {
   });
 
   describe('GET /roles/:id', () => {
-    it('returns role when found', async () => {
+    it('GET /roles/:id → 200 when valid role ID', async () => {
       mockGetById.mockResolvedValue(mockRoles[0]);
 
       const res = await request(app)
@@ -84,7 +85,7 @@ describe('RoleController', () => {
       expect(res.body.data).toEqual(mockRoles[0]);
     });
 
-    it('throws 404 error if no roles found.', async () => {
+    it('GET /roles/:id → 404 when role not found', async () => {
       mockGetById.mockRejectedValue(new NotFoundError('Role not found!'));
 
       const res = await request(app)
@@ -94,7 +95,7 @@ describe('RoleController', () => {
       expect(res.status).toBe(404);
     });
 
-    it('throws 400 error if no valid roleId was provided.', async () => {
+    it('GET /roles/:id → 400 when invalid ID format', async () => {
       const res = await request(app)
         .get(`${roleApiRoute}/asde`)
         .set('Cookie', authCookie);
@@ -106,7 +107,7 @@ describe('RoleController', () => {
   });
 
   describe('POST /roles', () => {
-    it('returns new role when created', async () => {
+    it('POST /roles → 201 when valid role data', async () => {
       mockCreate.mockResolvedValue(mockRoles[0]);
 
       const res = await request(app)
@@ -117,51 +118,51 @@ describe('RoleController', () => {
       expect(res.status).toBe(201);
       expect(res.body.message).toBe('Role created successfully!');
       expect(res.body.data.name).toBe('Admin');
-      expect(mockCreate).toHaveBeenCalledWith('Admin');
+      expect(mockCreate).toHaveBeenCalledWith({ name: 'Admin' });
     });
 
-    it('throws 400 error if no role name is provided.', async () => {
+    it('POST /roles → 400 when empty name', async () => {
       const res = await request(app)
         .post(roleApiRoute)
-        .send({})
+        .send({ name: '' })
         .set('Cookie', authCookie);
 
       expect(res.status).toBe(400);
       expect(mockCreate).not.toHaveBeenCalled();
-      expect(res.body.message).toBe('Role name is required.');
+      expect(res.body.message).toContain('Validation failed: name:');
+    });
+
+    it('POST /roles → 400 when name exceeds 50 characters', async () => {
+      const res = await request(app)
+        .post(roleApiRoute)
+        .send({ name: 'a'.repeat(100) })
+        .set('Cookie', authCookie);
+
+      expect(res.status).toBe(400);
+      expect(mockCreate).not.toHaveBeenCalled();
+      expect(res.body.message).toContain('Validation failed: name:');
     });
   });
 
-  describe('PUT /roles/:id', () => {
-    it('returns role when updated', async () => {
+  describe('PATCH /roles/:id', () => {
+    it('PATCH /roles/:id → 200 when valid update data', async () => {
       mockUpdateById.mockResolvedValue(mockRoles[0]);
       const roleId = 1;
 
       const res = await request(app)
-        .put(`${roleApiRoute}/${roleId}`)
+        .patch(`${roleApiRoute}/${roleId}`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 
       expect(res.status).toBe(200);
       expect(res.body.data.name).toBe('Admin');
-      expect(mockUpdateById).toHaveBeenCalledWith(1, 'Admin');
+      expect(mockUpdateById).toHaveBeenCalledWith(1, { name: 'Admin' });
       expect(mockUpdateById).toHaveBeenCalledTimes(1);
     });
 
-    it('throws 400 error if no role name is provided.', async () => {
+    it('PATCH /roles/:id → 400 when invalid ID format', async () => {
       const res = await request(app)
-        .put(`${roleApiRoute}/1`)
-        .send({ age: 2 })
-        .set('Cookie', authCookie);
-
-      expect(res.status).toBe(400);
-      expect(mockUpdateById).not.toHaveBeenCalled();
-      expect(res.body.message).toBe('Role name is required.');
-    });
-
-    it('throws 400 error if no roleId is provided.', async () => {
-      const res = await request(app)
-        .put(`${roleApiRoute}/one`)
+        .patch(`${roleApiRoute}/one`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 
@@ -170,11 +171,11 @@ describe('RoleController', () => {
       expect(res.body.message).toBe('Invalid ID.');
     });
 
-    it('throws 404 error if role not found when updating', async () => {
+    it('PATCH /roles/:id → 404 when role not found', async () => {
       mockUpdateById.mockRejectedValue(new NotFoundError('Role not found!'));
 
       const res = await request(app)
-        .put(`${roleApiRoute}/1`)
+        .patch(`${roleApiRoute}/2`)
         .send({ name: 'Admin' })
         .set('Cookie', authCookie);
 
@@ -182,14 +183,36 @@ describe('RoleController', () => {
       expect(res.body.message).toBe('Role not found!');
     });
 
-    it('returns 401 if no auth token is provided', async () => {
+    it('GET /roles → 401 when no auth token', async () => {
       const res = await request(app).get(roleApiRoute);
       expect(res.status).toBe(401);
+    });
+
+    it('PATCH /roles/:id → 400 when empty name', async () => {
+      const res = await request(app)
+        .patch(`${roleApiRoute}/2`)
+        .send({ name: '' })
+        .set('Cookie', authCookie);
+
+      expect(res.status).toBe(400);
+      expect(mockUpdateById).not.toHaveBeenCalled();
+      expect(res.body.message).toContain('Validation failed: name:');
+    });
+
+    it('PATCH /roles/:id → 400 when name exceeds 50 characters', async () => {
+      const res = await request(app)
+        .patch(`${roleApiRoute}/2`)
+        .send({ name: 'a'.repeat(100) })
+        .set('Cookie', authCookie);
+
+      expect(res.status).toBe(400);
+      expect(mockUpdateById).not.toHaveBeenCalled();
+      expect(res.body.message).toContain('Validation failed: name:');
     });
   });
 
   describe('DELETE /roles/:id', () => {
-    it('returns role when deleted', async () => {
+    it('DELETE /roles/:id → 200 when valid role ID', async () => {
       mockDeleteById.mockResolvedValue(mockRoles[0]);
       const roleId = 1;
 
@@ -203,7 +226,7 @@ describe('RoleController', () => {
       expect(mockDeleteById).toHaveBeenCalledTimes(1);
     });
 
-    it('throws 400 error if no roleId is provided.', async () => {
+    it('DELETE /roles/:id → 400 when invalid ID format', async () => {
       const res = await request(app)
         .delete(`${roleApiRoute}/one`)
         .set('Cookie', authCookie);

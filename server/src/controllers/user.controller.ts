@@ -2,7 +2,9 @@ import { Response, Request } from 'express';
 import { UserService } from '../services/user.service';
 import { successApiResponse } from '../utils/api-response.util';
 import { BadRequest } from '../errors/bad-request.error';
-import { UserDto } from '../types/user';
+// import { UserDto } from '../types/user';
+import { UserCreateDto } from '../dto/user/user-create.dto';
+import { UserRoleUpdateDto } from '../dto/user/user-role-update.dto';
 
 export class UserController {
   private userService: UserService;
@@ -33,7 +35,7 @@ export class UserController {
   };
 
   create = async (req: Request, res: Response): Promise<void> => {
-    const userData: UserDto = req.body;
+    const userData: UserCreateDto = req.body;
 
     if (!userData.roleId) throw new BadRequest('Role Id was not provided.');
 
@@ -44,11 +46,15 @@ export class UserController {
 
   updateUserRole = async (req: Request, res: Response): Promise<void> => {
     const userId = Number(req.params.id);
-    const { roleId = NaN } = req.body;
+    const roleUpdateData: UserRoleUpdateDto = req.body;
 
-    if (isNaN(roleId) || isNaN(userId)) throw new BadRequest('Invalid ID.');
+    if (isNaN(roleUpdateData.roleId) || isNaN(roleUpdateData.roleId))
+      throw new BadRequest('Invalid ID.');
 
-    const result = await this.userService.updateUserRole(userId, roleId);
+    const result = await this.userService.updateUserRole(
+      userId,
+      roleUpdateData.roleId,
+    );
     return successApiResponse(
       res,
       200,

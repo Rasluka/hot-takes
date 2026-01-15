@@ -3,7 +3,9 @@ import { TakeService } from '../services/take.service';
 import { successApiResponse } from '../utils/api-response.util';
 import { BadRequest } from '../errors/bad-request.error';
 import { AuthenticatedRequest } from '../types/auth-request';
-import { Take } from '../types/take';
+import { TakeResponseDto } from '../dto/take/take-response.dto';
+import { TakeCreateDto } from '../dto/take/take-create.dto';
+import { TakeUpdateDto } from '../dto/take/take-update.dto';
 
 export class TakeController {
   private takeService: TakeService;
@@ -13,7 +15,7 @@ export class TakeController {
   }
 
   getAll = async (_req: Request, res: Response): Promise<void> => {
-    const results: Take[] = await this.takeService.getAll();
+    const results: TakeResponseDto[] = await this.takeService.getAll();
 
     return successApiResponse(
       res,
@@ -34,27 +36,23 @@ export class TakeController {
   };
 
   create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const { content = '' } = req.body;
+    const takeData: TakeCreateDto = req.body;
     const { user } = req;
-
-    if (!content.trim()) throw new BadRequest('Take content was not provided');
 
     if (!user?.userId) throw new BadRequest('User id was not provided');
 
-    const result = await this.takeService.create(content, user.userId);
+    const result = await this.takeService.create(takeData, user.userId);
 
     return successApiResponse(res, 201, result, 'Take succesfully created!');
   };
 
   updateById = async (req: Request, res: Response): Promise<void> => {
     const takeId = Number(req.params.id);
-    const { content = '' } = req.body;
+    const takeData: TakeUpdateDto = req.body;
 
     if (isNaN(takeId)) throw new BadRequest('Invalid ID.');
 
-    if (!content.trim()) throw new BadRequest('Take content was not provided.');
-
-    const result = await this.takeService.updateById(takeId, content);
+    const result = await this.takeService.updateById(takeId, takeData);
 
     return successApiResponse(res, 200, result, 'Take updated succesfully!');
   };
