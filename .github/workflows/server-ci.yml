@@ -62,7 +62,7 @@ jobs:
         working-directory: server
         run: |
           # Completely reset the database
-          dotenv -e .env.test -- npx prisma db push --force-reset --schema=./prisma/schema.prisma
+          npx prisma db push --force-reset --schema=./prisma/schema.prisma
           npx prisma generate --schema=./prisma/schema.prisma
 
       - name: Run Integration Tests

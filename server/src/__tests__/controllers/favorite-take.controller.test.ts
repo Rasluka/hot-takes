@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateJwtToken } from '../../utils/generate-token.util';
-// import { BadRequest } from '../../errors/bad-request.error';
 
 const favoriteTakeApiRoute: string = '/api/v1/favorites/takes';
 const authCookie = `token=${generateJwtToken(1, 'Admin')}`;
@@ -77,6 +76,41 @@ describe('FavoriteTakeController', () => {
       expect(res.status).toBe(400);
       expect(mockAddFavorite).not.toHaveBeenCalled();
       expect(res.body.message).toContain('Validation failed: takeId:');
+    });
+
+    describe('GET /favorites/takes', () => {
+      it('returns all takes added as favorite by a user', async () => {
+        mockGetUserFavorites.mockResolvedValue(mockTakes);
+
+        const res = await request(app)
+          .get(favoriteTakeApiRoute)
+          .set('Cookie', authCookie);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data).toHaveLength(mockTakes.length);
+        expect(mockGetUserFavorites).toHaveBeenCalledTimes(1);
+      });
+
+      it('throws 401 if no valid token is provided', async () => {
+        const res = await request(app).get(favoriteTakeApiRoute);
+
+        expect(res.status).toBe(401);
+        expect(mockGetUserFavorites).not.toHaveBeenCalled();
+        expect(res.body.message).toBe('Access denied. No token provided.');
+      });
+
+      it('throws 400 if service throws BadRequest', async () => {
+        mockGetUserFavorites.mockRejectedValue(
+          new BadRequest('Invalid User ID.'),
+        );
+
+        const res = await request(app)
+          .get(favoriteTakeApiRoute)
+          .set('Cookie', authCookie);
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('Invalid User ID.');
+      });
     });
 
     it('DELETE /favorites/takes → 401 when no auth token', async () => {
