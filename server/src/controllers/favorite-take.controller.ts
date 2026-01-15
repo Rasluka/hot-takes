@@ -1,9 +1,10 @@
 import { Response } from 'express';
 import { FavoriteTakeService } from '../services/favorite-take.service';
 import { successApiResponse } from '../utils/api-response.util';
-import { Take } from '../types/take';
+import { TakeResponseDto } from '../dto/take/take-response.dto';
 import { BadRequest } from '../errors/bad-request.error';
 import { AuthenticatedRequest } from '../types/auth-request';
+import { FavoriteAddDto } from '../dto/favorite-take/favorite-take-create.dto';
 
 export class FavoriteTakeController {
   constructor(private readonly favoriteTakeService: FavoriteTakeService) {}
@@ -16,7 +17,7 @@ export class FavoriteTakeController {
 
     if (isNaN(userId)) throw new BadRequest('Invalid User ID.');
 
-    const results: Take[] =
+    const results: TakeResponseDto[] =
       await this.favoriteTakeService.getUserFavorites(userId);
 
     return successApiResponse(
@@ -32,12 +33,12 @@ export class FavoriteTakeController {
     res: Response,
   ): Promise<void> => {
     const userId = req.user!.userId;
-    const takeId = Number(req.body.takeId);
+    const favorite: FavoriteAddDto = req.body;
 
     if (!userId) throw new BadRequest('User not authenticated');
-    if (isNaN(takeId)) throw new BadRequest('Invalid Take ID.');
+    if (isNaN(favorite.takeId)) throw new BadRequest('Invalid Take ID.');
 
-    const result = await this.favoriteTakeService.addFavorite(userId, takeId);
+    const result = await this.favoriteTakeService.addFavorite(userId, favorite);
 
     return successApiResponse(
       res,

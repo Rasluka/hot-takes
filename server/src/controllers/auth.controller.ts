@@ -3,7 +3,11 @@ import { AuthService } from '../services/auth.service';
 import { successApiResponse } from '../utils/api-response.util';
 import { AuthenticatedRequest } from '../types/auth-request';
 import { BadRequest } from '../errors/bad-request.error';
-import { UserDto, UserSignInDto } from '../types/user';
+import {
+  UserCreateDto,
+  UserCreateResponseDto,
+} from '../dto/user/user-create.dto';
+import { SignInDto } from '../dto/auth/sign-in.dto';
 import { UnauthorizedError } from '../errors/unauthorized.error';
 
 export class AuthController {
@@ -14,19 +18,20 @@ export class AuthController {
   }
 
   signUp = async (req: Request, res: Response): Promise<void> => {
-    const userData: UserDto = req.body;
+    const userData: UserCreateDto = req.body;
 
     if (!userData.email || !userData.nickname) {
       throw new BadRequest('Email and nickname are required.');
     }
 
-    const results = await this.authService.signUp(userData);
+    const results: UserCreateResponseDto =
+      await this.authService.signUp(userData);
 
     return successApiResponse(res, 201, results, 'User created succesfully!');
   };
 
   signIn = async (req: Request, res: Response): Promise<void> => {
-    const userData: UserSignInDto = req.body;
+    const userData: SignInDto = req.body;
 
     if (!userData.nickname || !userData.code || userData.code.length !== 8) {
       throw new BadRequest('Invalid credentials.');
@@ -42,7 +47,7 @@ export class AuthController {
       path: '/',
     });
 
-    return successApiResponse(res, 200, { ...user }, 'Signed in successfully');
+    return successApiResponse(res, 200, user, 'Signed in successfully');
   };
 
   getCurrentUser = async (

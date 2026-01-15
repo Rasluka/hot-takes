@@ -1,9 +1,7 @@
-import { User } from '../types/user';
-import { User as PrismaUserModel } from '@prisma/client';
+import { UserEntity } from '../entities/user.entity';
+import { UserResponseDto } from '../dto/user/user-response.dto';
 
-export function formatUser(
-  user: PrismaUserModel & { role: { id: number; name: string } },
-): User {
+export function mapToUserResponseDto(user: UserEntity): UserResponseDto {
   return {
     id: user.id,
     nickname: user.nickname,

@@ -1,14 +1,18 @@
 import { generateCode } from '../utils/generate-code.util';
 import { PrismaClient } from '@prisma/client';
-import { UserDto, UserCreationResult } from '../types/user';
 import { ConflictError } from '../errors/conflict.error';
-import { formatUser } from '../utils/format-user.util';
+import { mapToUserResponseDto } from '../utils/format-user.util';
+import {
+  UserCreateDto,
+  UserCreateResponseDto,
+} from '../dto/user/user-create.dto';
 
 export async function createUserInDb(
   prisma: PrismaClient,
-  userData: UserDto,
-): Promise<UserCreationResult> {
-  const normalizedData: UserDto = normalizeUserDto(userData);
+  userData: UserCreateDto,
+  roleId?: number,
+): Promise<UserCreateResponseDto> {
+  const normalizedData: UserCreateDto = normalizeUserDto(userData);
   const { newCode, hashedCode } = await generateCode();
 
   try {
@@ -16,14 +20,14 @@ export async function createUserInDb(
       data: {
         ...normalizedData,
         hashedCode: hashedCode,
-        roleId: normalizedData.roleId || 2,
+        roleId: roleId || 2,
       },
       include: {
         role: true,
       },
     });
 
-    return { user: formatUser(user), code: newCode };
+    return { user: mapToUserResponseDto(user), code: newCode };
   } catch (err: any) {
     if (err.code === 'P2002') {
       // Prisma unique constraint error (P2002)
@@ -37,7 +41,7 @@ export async function createUserInDb(
   }
 }
 
-const normalizeUserDto = (userDto: UserDto): UserDto => {
+const normalizeUserDto = (userDto: UserCreateDto): UserCreateDto => {
   return {
     ...userDto,
     nickname: userDto.nickname.trim().toLowerCase(),

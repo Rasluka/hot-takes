@@ -1,39 +1,39 @@
 import bcrypt from 'bcrypt';
 import { createUserInDb } from './user.creation';
 import {
-  User,
-  UserCreationResult,
-  UserDto,
-  UserSignInDto,
-  UserSignInResult,
-} from '../types/user';
+  UserCreateDto,
+  UserCreateResponseDto,
+} from '../dto/user/user-create.dto';
+import { SignInDto, SignInResponseDto } from '../dto/auth/sign-in.dto';
+import { UserResponseDto } from '../dto/user/user-response.dto';
 import { sendCodeEmail } from './email.service';
 import { PrismaClient } from '@prisma/client';
 import { UnauthorizedError } from '../errors/unauthorized.error';
 import { NotFoundError } from '../errors/not-found.error';
-import { formatUser } from '../utils/format-user.util';
+import { mapToUserResponseDto } from '../utils/format-user.util';
 import { generateJwtToken } from '../utils/generate-token.util';
 
 export class AuthService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async signUp(userData: UserDto): Promise<UserCreationResult> {
-    const signUpRes: UserCreationResult = await createUserInDb(this.prisma, {
-      ...userData,
-      roleId: 2, // RoleId is assigned 2 for 'normal users'
-    });
+  async signUp(userData: UserCreateDto): Promise<UserCreateResponseDto> {
+    const signUpResult: UserCreateResponseDto = await createUserInDb(
+      this.prisma,
+      userData,
+      2, // RoleId is assigned 2 for 'normal users'
+    );
     let emailSent = true;
 
     try {
-      await sendCodeEmail(userData.email, userData.nickname, signUpRes.code);
+      await sendCodeEmail(userData.email, userData.nickname, signUpResult.code);
     } catch {
       emailSent = false;
     }
 
-    return { ...signUpRes, emailSent };
+    return { ...signUpResult, emailSent };
   }
 
-  async signIn(userData: UserSignInDto): Promise<UserSignInResult> {
+  async signIn(userData: SignInDto): Promise<SignInResponseDto> {
     const normalizedNickname = userData.nickname.trim().toLowerCase();
     const normalizedCode = userData.code.trim();
 
@@ -54,10 +54,10 @@ export class AuthService {
 
     const token = generateJwtToken(user.id, user.role.name);
 
-    return { user: formatUser(user), token };
+    return { user: mapToUserResponseDto(user), token };
   }
 
-  async getCurrentUser(userId: number): Promise<User> {
+  async getCurrentUser(userId: number): Promise<UserResponseDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { role: true },
@@ -65,6 +65,6 @@ export class AuthService {
 
     if (!user) throw new NotFoundError('No user found!');
 
-    return formatUser(user);
+    return mapToUserResponseDto(user);
   }
 }
