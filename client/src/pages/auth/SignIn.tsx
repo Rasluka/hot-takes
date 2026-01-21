@@ -1,7 +1,6 @@
 import { AxiosError } from 'axios';
 import { ShieldUser, UserLock } from 'lucide-react';
 import type { JSX } from 'react';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router';
 
@@ -9,36 +8,40 @@ import { useUser } from '@/contexts/UserContext';
 import { login } from '@/services/authService';
 import type { UserType } from '@/types/user';
 import { onGlobalError } from '@/utils/global-error';
+import z from 'zod';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import clsx from 'clsx';
 
-interface ISignInStateForm {
-  nickname: string;
-  code: string;
-}
+const formSchema = z.object({
+  nickname: z
+    .string()
+    .min(1, 'Nickname is required')
+    .max(20, 'Nickname too long'),
+  code: z
+    .string()
+    .min(8, 'Code should 8 characters')
+    .max(8, 'Code should 8 characters'),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function SignIn(): JSX.Element {
-  const [formData, setFormData] = useState<ISignInStateForm>({
-    nickname: '',
-    code: '',
-  });
-  const [loginError, setLoginError] = useState<boolean>(false);
   const userContext = useUser();
   const navigate = useNavigate();
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+  });
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    setLoginError(false);
-  };
-
-  const onSubmitClicked = async () => {
-    if (!formData.nickname || !formData.code) return null;
-
+  const onFormSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     try {
-      const user: UserType = await login(formData);
+      const user: UserType = await login(data);
       userContext.login(user);
       toast.success('Logged in successfully!');
       void navigate('/');
@@ -54,13 +57,12 @@ export default function SignIn(): JSX.Element {
       }
 
       onGlobalError(errorMsg);
-      setLoginError(true);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <div className="card p-12 bg-base-100 rounded-box border border-base-300 shadow-lg">
+      <form className="form-base" onSubmit={handleSubmit(onFormSubmit)}>
         <h1 className="text-2xl font-bold text-center mb-2">Welcome</h1>
 
         <fieldset className="my-2">
@@ -72,13 +74,18 @@ export default function SignIn(): JSX.Element {
             </div>
             <input
               type="text"
-              className="input-base"
+              {...register('nickname')}
+              className={clsx('input-base', {
+                'border-red-400': errors.nickname,
+              })}
               placeholder="Nickname"
-              name="nickname"
-              value={formData.nickname}
-              onChange={onInputChange}
             />
           </div>
+          {errors.nickname && (
+            <p className="text-red-400 text-center">
+              {errors.nickname.message}
+            </p>
+          )}
         </fieldset>
 
         <fieldset className="my-2">
@@ -90,33 +97,32 @@ export default function SignIn(): JSX.Element {
             </div>
             <input
               type="password"
-              className="input-base"
+              {...register('code')}
+              className={clsx('input-base', {
+                'border-red-400': errors.code,
+              })}
               placeholder="Code"
-              name="code"
-              value={formData.code}
-              onChange={onInputChange}
             />
           </div>
+          {errors.code && (
+            <p className="text-red-400 text-center">{errors.code.message}</p>
+          )}
         </fieldset>
 
         <button
+          type="submit"
           className="button-base mt-4"
-          disabled={!formData.nickname || !formData.code}
-          onClick={() => void onSubmitClicked()}
+          disabled={!isValid || isSubmitting}
         >
           Login
         </button>
-
-        <p className="min-h-5 text-center  text-red-600">
-          {loginError ? 'Invalid credentials' : ''}
-        </p>
 
         <div className="divider divider-neutral dark:divider-primary">OR</div>
 
         <Link to="/signup" className="link link-hover text-center font-bold">
           Create New Account
         </Link>
-      </div>
+      </form>
     </div>
   );
 }
